@@ -11,7 +11,7 @@ import json
 from datetime import timedelta
 
 #token = open('pk.eyJ1IjoiZGlhbmFwenA5NiIsImEiOiJja2dlNTUxbWExN2VkMnJxdTdpYmxrcWowIn0.BaVVonTGXIQavJojx-v4sw').read()
-
+diana = 'zapata'
 #Read csv
 discharges = pd.read_csv('./data/discharges.csv', header=0, delimiter=',', index_col=0,
                          names=['date','longitude','latitude','polarity','magnitude','current'], parse_dates=['date'])
