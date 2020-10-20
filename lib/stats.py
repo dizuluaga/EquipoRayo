@@ -73,9 +73,10 @@ def _update_label(label_selected):
     )
 def _update_time_range_label(year_range):
     return 'From {} to {} minutes before outage'.format(year_range[0], year_range[1])
+
 # the value of RangeSlider causes Graph to update
 @app.callback(
-    output=Output('fig-id', 'figure'),
+    output=[Output('fig-id', 'figure'),Output()
     inputs=[Input(component_id = 'year_slider', component_property='value'),
             Input('outage_dropdown','value'),
             Input('polatiry_or_magnitude','value')
@@ -138,4 +139,7 @@ def _update_graph(year_range, outage_indicator,polatiry_or_magnitude):
             zoom=8
     ))
     map_fig['layout']['uirevision'] = 'no reset of zoom'
+    
+    fig = px.line(df, x="year", y="lifeExp", color="continent",
+              line_group="country", hover_name="country")
     return map_fig
