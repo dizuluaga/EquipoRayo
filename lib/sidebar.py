@@ -44,7 +44,7 @@ ISA_Img = html.Div(
 available_indicators = stats.outages.index
 dropdown = dcc.Dropdown(
     id="outage_dropdown",
-    options=[{"label": i, "value": i} for i in available_indicators],
+    options=[{"label": stats.outages.loc[i,'date'].strftime('%Y-%m-%d'), "value": i} for i in available_indicators],
     value='57',
     multi=False,
 )
