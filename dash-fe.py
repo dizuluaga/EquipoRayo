@@ -22,7 +22,7 @@ towers = pd.read_csv('./data/towers.csv', header=0, delimiter=',', names=['longi
 discharges_all_outages = pd.DataFrame(columns=discharges.columns)
 
 def Discharges_before_outage_by_time(outage_date, time_range):
-    datetime_f = outage_date - timedelta(minutes=5)
+    datetime_f = outage_date - timedelta(minutes=15)
     datetime_i = datetime_f - timedelta(minutes=time_range)
     discharges_before_outage_by_time = discharges[(discharges['date']>datetime_i) &
                         (discharges['date']<datetime_f)].reset_index()
