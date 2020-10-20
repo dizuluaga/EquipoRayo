@@ -61,7 +61,7 @@ map_fig.update_layout(
     title='Electric discharges of the last 20 minutes',
     autosize=True,
     # hovermode='closest',
-    showlegend=False,
+    showlegend=True,
     # mapbox_style="open-street-map",
     height=700,
     mapbox=dict(
@@ -126,8 +126,9 @@ def _update_graph(year_range, outage_indicator):
         mode='markers',
         marker=go.scattermapbox.Marker(
             size=7,
-            color='blue',
-            opacity=0.7
+            color=discharges_outage_1.magnitude,
+            opacity=0.7,
+            showscale=True,
         ),
     ))
     map_fig.add_trace(go.Scattermapbox(
