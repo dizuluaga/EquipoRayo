@@ -74,7 +74,7 @@ sidebar = html.Div(
         ####################################################
         # Place the rest of Layout here
         ####################################################
-        html.H4("TEAM RAYO"),
+        html.H4("Team 4"),
         html.Hr(),
         html.H5("Select dates"),
         date_picker,
