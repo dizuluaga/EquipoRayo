@@ -15,7 +15,7 @@ from app import app
 title = html.Div(
     className="ds4a-title",
     children=[
-        dbc.Row(dbc.Col(html.H1("Línea Comuneros - Primavera"), width={"size": 6, "offset": 3}))
+        dbc.Row(dbc.Col(html.H1("Comuneros-Primavera Power Line"), width={"size":7, "offset": 3}))
     ],
     id="title",
 )

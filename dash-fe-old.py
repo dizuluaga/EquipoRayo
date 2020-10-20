@@ -10,7 +10,7 @@ import pandas as pd
 import json
 from datetime import timedelta
 
-#token = open('pk.eyJ1IjoiZGlhbmFwenA5NiIsImEiOiJja2dlNTUxbWExN2VkMnJxdTdpYmxrcWowIn0.BaVVonTGXIQavJojx-v4sw').read()
+token = 'pk.eyJ1IjoiZGlhbmFwenA5NiIsImEiOiJja2dlNTUxbWExN2VkMnJxdTdpYmxrcWowIn0.BaVVonTGXIQavJojx-v4sw'
 diana = 'zapata'
 #Read csv
 discharges = pd.read_csv('./data/discharges.csv', header=0, delimiter=',', index_col=0,
@@ -64,8 +64,9 @@ fig.update_layout(
     #mapbox_style="open-street-map",
     height=500,
     mapbox=dict(
-        style='open-street-map',
-    #    accesstoken=mapbox_access_token,
+    #    style='open-street-map',
+        accesstoken=token,
+        style='outdoors',
     #    bearing=0,
         center=dict(
             lat=6.73,

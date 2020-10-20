@@ -15,6 +15,8 @@ import os
 
 from app import app
 
+mapbox_token = 'pk.eyJ1IjoiZGlhbmFwenA5NiIsImEiOiJja2dlNTUxbWExN2VkMnJxdTdpYmxrcWowIn0.BaVVonTGXIQavJojx-v4sw'
+mapstyle = 'mapbox://styles/dianapzp96/ckgijhjph0h3x19pfx3fpo5na'
 
 discharges = pd.read_csv('./data/discharges.csv', header=0, delimiter=',', index_col=0,
                          names=['date', 'longitude', 'latitude', 'polarity', 'magnitude', 'current'], parse_dates=['date'])
@@ -128,8 +130,8 @@ def _update_graph(year_range, outage_indicator,polatiry_or_magnitude):
         # hovermode='closest',
         # mapbox_style="open-street-map",
         mapbox=dict(
-            style='open-street-map',
-        #    accesstoken=mapbox_access_token,
+            accesstoken=mapbox_token,
+            style=mapstyle,
         #    bearing=0,
             center=dict(
                 lat=6.73,
