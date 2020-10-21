@@ -41,3 +41,17 @@
     padding: 2rem 1rem;
     background-color: #AAB7B8;
 }
+
+.my_box_container {
+    display: flex;
+  }
+  
+  .my_box_input {
+    cursor: pointer;
+  }
+  
+  .my_box_label {
+    background: #97d1db;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+  }

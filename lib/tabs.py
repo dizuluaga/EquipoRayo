@@ -1,25 +1,30 @@
+import json
+import os
+from datetime import datetime as dt
+
 import dash
-from dash.dependencies import Input, Output, State, ClientsideFunction
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_bootstrap_components as dbc
-import plotly.graph_objects as go
-import plotly.express as px
-
-
-from datetime import datetime as dt
-import json
 import numpy as np
 import pandas as pd
-import os
-
+import plotly.express as px
+import plotly.graph_objects as go
 # Recall app
 from app import app
-
+from dash.dependencies import ClientsideFunction, Input, Output, State
 
 tabs = html.Div([
     dcc.Tabs(id="tabs-styled-with-props", value='tab-1', children=[
-        dcc.Tab(label='Histograma', value='tab-1'),
+        dcc.Tab(label='Histograma', value='tab-1', children=[
+            #RadioItems por una sola opcion, dcc.Checklist para varios.
+             dcc.RadioItems(
+                options=[
+                    {'label': 'Density', 'value': 'NYC'},
+                    {'label': 'Accumulated', 'value': 'MTL'},
+                ],
+                value='NYC',
+                className='my_box_container',inputClassName='my_box_input',labelClassName='my_box_label')]),
         dcc.Tab(label='2', value='tab-2'),
     ]),
     html.Div(id='tabs-content-props',children=[dcc.Graph(id='histo')])], className="ds4a-graphs")
