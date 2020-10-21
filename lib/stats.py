@@ -67,7 +67,7 @@ def _update_time_range_label(year_range):
 
 # the value of RangeSlider causes Graph to update
 @app.callback(
-    output=[Output('fig-id', 'figure'),Output()
+    output=Output('fig-id', 'figure'),
     inputs=[Input(component_id = 'year_slider', component_property='value'),
             Input('outage_dropdown','value'),
             Input('polatiry_or_magnitude','value')
@@ -144,13 +144,6 @@ def _update_graph(year_range, outage_indicator,polatiry_or_magnitude):
         # hovermode='closest',
         # mapbox_style="open-street-map",
         mapbox=dict(
-        #    layers=[dict(
-        #        sourcetype = 'geojson',
-        #        source = buf.buffer_3km_json,
-        #        type = 'fill',
-        #        color = 'rgba(163,22,19,0.8)'
-        #    )
-        #],
             accesstoken=mapbox_token,
             style=mapstyle,
         #    bearing=0,
@@ -158,12 +151,12 @@ def _update_graph(year_range, outage_indicator,polatiry_or_magnitude):
                 lat=6.73,
                 lon=-73.9
             ),
-            zoom=8
+            zoom=9
     ))
     
     #map_fig.add_area(buf.buffer_3km_json['coordinates'])
     map_fig['layout']['uirevision'] = 'no reset of zoom'
     
-    fig = px.line(df, x="year", y="lifeExp", color="continent",
-              line_group="country", hover_name="country")
+    #fig = px.line(df, x="year", y="lifeExp", color="continent",
+    #          line_group="country", hover_name="country")
     return map_fig
