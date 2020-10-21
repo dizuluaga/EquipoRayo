@@ -14,27 +14,16 @@ import pandas as pd
 import os
 
 from app import app
+import data.data_import as di
+import lib.buffer as buf
+
+discharges = di.discharges
+towers = di.towers
+outages = di.outages
+discharges_all_outages = di.discharges_all_outages
 
 mapbox_token = 'pk.eyJ1IjoiZGlhbmFwenA5NiIsImEiOiJja2dlNTUxbWExN2VkMnJxdTdpYmxrcWowIn0.BaVVonTGXIQavJojx-v4sw'
 mapstyle = 'mapbox://styles/dianapzp96/ckgijhjph0h3x19pfx3fpo5na'
-
-discharges = pd.read_csv('./data/discharges.csv', header=0, delimiter=',', index_col=0,
-                         names=['date', 'longitude', 'latitude', 'polarity', 'magnitude', 'current'], parse_dates=['date'])
-outages = pd.read_csv('./data/outages.csv', header=0, delimiter=',', index_col=0,
-                     names=['date', 'year', 'time', 'cause', 'outages_number', 'r_inf', 'r_sup'], parse_dates=['date'])
-towers = pd.read_csv('./data/towers.csv', header=0,
-                     delimiter=',', names=['longitude', 'latitude'])
-
-discharges_all_outages = pd.DataFrame(columns=discharges.columns)
-
-def Discharges_before_outage_by_time(outage_date, time_range, min_before=5):
-    datetime_f = outage_date - timedelta(minutes=min_before)
-    datetime_i = datetime_f - timedelta(minutes=time_range)
-    discharges_copy = discharges.copy()
-    discharges_before_outage_by_time = discharges_copy[(discharges['date'] > datetime_i) &
-                        (discharges_copy['date'] < datetime_f)].reset_index()
-    return discharges_before_outage_by_time
-
 
 # #################################################################################
 # Here the layout for the plots to use.
@@ -92,7 +81,7 @@ def _update_graph(year_range, outage_indicator,polatiry_or_magnitude):
     outage_date = outages.loc[outage_indicator,'date']
     min_start = year_range[0]
     min_end = year_range[1]
-    discharges_outage_1 = Discharges_before_outage_by_time(outage_date, min_end,min_start)
+    discharges_outage_1 = di.Discharges_before_outage_by_time(outage_date, min_end,min_start)
     discharges_outage_1.sort_values(polatiry_or_magnitude, inplace = True)
     map_fig = go.Figure()
     map_fig.add_trace(go.Scattermapbox(
@@ -121,7 +110,31 @@ def _update_graph(year_range, outage_indicator,polatiry_or_magnitude):
             color='black',
             opacity=0.7
         ),
-        name="Torres eléctricas"
+        name="Towers"
+    ))
+    map_fig.add_trace(go.Scattermapbox(
+        lon=np.array(buf.x_buffer_3km),
+        lat=np.array(buf.y_buffer_3km),
+        mode="lines",
+        name='3km buffer',
+        marker=go.scattermapbox.Marker(
+            size=8,
+            color='rgb(242, 177, 172)',
+            opacity=0.3
+        )
+        #inherit=False
+    ))
+    map_fig.add_trace(go.Scattermapbox(
+        lon=np.array(buf.x_buffer_5km),
+        lat=np.array(buf.y_buffer_5km),
+        mode="lines",
+        name='5km buffer',
+        marker=go.scattermapbox.Marker(
+            size=8,
+            color='rgb(142, 177, 172)',
+            opacity=0.3
+        )
+        #inherit=False
     ))
     map_fig.update_layout(
         title='Electric discharges of the last 20 minutes',
@@ -141,8 +154,10 @@ def _update_graph(year_range, outage_indicator,polatiry_or_magnitude):
                 lat=6.73,
                 lon=-73.9
             ),
-            zoom=8
+            zoom=9
     ))
+    
+    #map_fig.add_area(buf.buffer_3km_json['coordinates'])
     map_fig['layout']['uirevision'] = 'no reset of zoom'
     
     ###################################
