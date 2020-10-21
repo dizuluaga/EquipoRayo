@@ -28,8 +28,13 @@ DS4A_Img = html.Div(
 )
 
 ISA_Img = html.Div(
-    children=[html.Img(src=app.get_asset_url("ISA_logo.png"), id="logo-image",style={"width": "100%"})],
-
+    children=[
+        html.Img(
+            src=app.get_asset_url("ISA_logo.png"),
+            id="logo-image",
+            style={"width": "100%"},
+        )
+    ],
 )
 
 #############################################################################
@@ -44,11 +49,13 @@ ISA_Img = html.Div(
 available_indicators = stats.outages.index
 dropdown = dcc.Dropdown(
     id="outage_dropdown",
-    options=[{"label": stats.outages.loc[i,'date'].strftime('%Y-%m-%d'), "value": i} for i in available_indicators],
-    value='57',
+    options=[
+        {"label": stats.outages.loc[i, "date"].strftime("%Y-%m-%d"), "value": i}
+        for i in available_indicators
+    ],
+    value="57",
     multi=False,
 )
-
 
 
 ##############################################################################
@@ -82,7 +89,7 @@ sidebar = html.Div(
         html.H5("Select outage"),
         dropdown,
         html.Hr(),
-        ISA_Img
+        ISA_Img,
     ],
     className="ds4a-sidebar",
 )

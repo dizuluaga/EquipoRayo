@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import plotly.express as px
 from datetime import timedelta
-
+from plotly.subplots import make_subplots
 from datetime import datetime as dt
 import json
 import numpy as np
@@ -57,6 +57,7 @@ stats = html.Div(
                 step=1,
                 marks={i:f'{i}' for i in range(30)},
                 value=[5, 10])]),
+         dcc.Graph(id="line-fig")
     ],
     className="ds4a-body",
 )
@@ -78,7 +79,7 @@ def _update_time_range_label(year_range):
 
 # the value of RangeSlider causes Graph to update
 @app.callback(
-    output=[Output('fig-id', 'figure'),Output()
+    output=[Output('fig-id', 'figure'),Output('line-fig', 'figure')],
     inputs=[Input(component_id = 'year_slider', component_property='value'),
             Input('outage_dropdown','value'),
             Input('polatiry_or_magnitude','value')
@@ -101,13 +102,15 @@ def _update_graph(year_range, outage_indicator,polatiry_or_magnitude):
         marker=go.scattermapbox.Marker(
             size=7,
             color=discharges_outage_1[polatiry_or_magnitude],
+            colorscale = None if polatiry_or_magnitude !='polarity' else ['red','blue'],
             opacity=0.7,
             showscale=False if polatiry_or_magnitude=='polarity' else True,
+            colorbar=dict(title=polatiry_or_magnitude),
         ),
         text=discharges_outage_1[polatiry_or_magnitude],
         hovertemplate =polatiry_or_magnitude+': %{text:.2f}',
         hoverinfo='text',
-        name="Discharges"
+        name="Discharges",
     ))
     map_fig.add_trace(go.Scattermapbox(
         lat=towers.latitude,
@@ -142,6 +145,61 @@ def _update_graph(year_range, outage_indicator,polatiry_or_magnitude):
     ))
     map_fig['layout']['uirevision'] = 'no reset of zoom'
     
-    fig = px.line(df, x="year", y="lifeExp", color="continent",
-              line_group="country", hover_name="country")
-    return map_fig
+    ###################################
+    df = discharges_outage_1.copy()
+    line_fig = go.Figure()
+    # Add traces
+    line_fig = make_subplots(rows=1, cols=3,  subplot_titles=('Magnitude','Current','Polarity'))
+# Add traces
+    line_fig.add_trace(go.Scatter(x=df.date, y=df.magnitude,
+                        mode='markers',
+                        name='markers'),row=1, col=1)
+    line_fig.add_trace(go.Scatter(x=df.date, y=df.current,
+                        mode='markers',
+                        name='markers'),row=1, col=2,)
+    line_fig.add_trace(go.Scatter(x=df.date, y=df.polarity,
+                        mode='markers',
+                        name='markers'),row=1, col=3,)
+    line_fig.update_layout(
+        shapes=[
+            # 1st highlight during Feb 4 - Feb 6
+            dict(
+                type="line",
+                # x-reference is assigned to the x-values
+                xref=f"x{i}",
+                # y-reference is assigned to the plot paper [0,1]
+                yref="paper",
+                x0=outage_date,
+                y0=0,
+                x1=outage_date,
+                y1=1,
+                fillcolor="LightSalmon",
+                opacity=0.5,
+                layer="above",
+                line=dict(
+                    color="red",
+                    width=4,
+                )
+            )
+        for i in range(1,4)],
+        annotations=[
+            dict(
+                x=outage_date,
+                y=0.4,
+                showarrow=False,
+                text="Outage",
+                xref=f"x{i}",
+                yref="paper",
+                textangle=270,
+                xshift=-15,
+                font=dict(
+            family="sans serif",
+            size=20,
+            color="crimson"
+        )
+            ) for i in range(1,4)],
+    )
+    line_fig.update_xaxes(matches='x')
+    line_fig['layout']['uirevision'] = 'no reset of zoom'
+    
+    return map_fig, line_fig

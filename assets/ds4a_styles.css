@@ -11,6 +11,14 @@
     background-color: #F8F9F9;
 }
 
+.ds4a-graphs {
+    margin-top: 1px;
+    margin-left: 17rem;
+    margin-right: 2rem;
+    padding: 2rem 1rem;
+    background-color: #F8F9F9;
+}
+
 .ds4a-title {
     position: fixed;
     top: 0;
@@ -31,5 +39,5 @@
     bottom: 0;
     width: 16rem;
     padding: 2rem 1rem;
-    background-color: #AAB7B8; 
+    background-color: #AAB7B8;
 }
