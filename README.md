@@ -1,7 +1,7 @@
 # Dashboard for ISA project
 
 ## Integrants:
-* Diana Zapata
+* Diana Zuluaga
 * Camilo Gutierrrez
 * Weibmar
 * Edison
