@@ -14,13 +14,22 @@ import pandas as pd
 import os
 
 from app import app
-import data.data_import as di
+import data.data_import_DB as di
 import lib.buffer as buf
 
 discharges = di.discharges
 towers = di.towers
 outages = di.outages
-discharges_all_outages = di.discharges_all_outages
+
+discharges_all_outages = pd.DataFrame(columns=discharges.columns)
+
+def Discharges_before_outage_by_time(outage_date, time_range, min_before=5):
+    datetime_f = outage_date - timedelta(minutes=min_before)
+    datetime_i = datetime_f - timedelta(minutes=time_range)
+    discharges_copy = discharges.copy()
+    discharges_before_outage_by_time = discharges_copy[(discharges['date'] > datetime_i) &
+                        (discharges_copy['date'] < datetime_f)].reset_index()
+    return discharges_before_outage_by_time
 
 mapbox_token = 'pk.eyJ1IjoiZGlhbmFwenA5NiIsImEiOiJja2dlNTUxbWExN2VkMnJxdTdpYmxrcWowIn0.BaVVonTGXIQavJojx-v4sw'
 mapstyle = 'mapbox://styles/dianapzp96/ckgijhjph0h3x19pfx3fpo5na'
@@ -28,17 +37,18 @@ mapstyle = 'mapbox://styles/dianapzp96/ckgijhjph0h3x19pfx3fpo5na'
 # #################################################################################
 # Here the layout for the plots to use.
 #################################################################################
-stats = html.Div(
-    [        html.Div(
+stats = html.Div([
+        html.Div(
             [
                 dcc.Graph(id="fig-id",style = {'width': '100%', 'height':'650%'})
              ]
-            ),html.Label(children='Select value to display:', id='polarity-label'),
-     dcc.Dropdown(
+            ),
+        html.Label(children='Select value to display:', id='polarity-label'),
+        dcc.Dropdown(
                 id='polatiry_or_magnitude',
                 options=[{'label': i, 'value': i} for i in ['polarity','magnitude','current']],
                 value='magnitude'
-            ),
+        ),
         html.Div([html.Label(children='From 2007 to 2017 minutes before outage', id='time-range-label'),dcc.RangeSlider(
                 id='year_slider',
                 min=0,
@@ -46,7 +56,7 @@ stats = html.Div(
                 step=1,
                 marks={i:f'{i}' for i in range(30)},
                 value=[5, 10])]),
-         dcc.Graph(id="line-fig")
+        dcc.Graph(id="line-fig")
     ],
     className="ds4a-body",
 )
@@ -81,7 +91,7 @@ def _update_graph(year_range, outage_indicator,polatiry_or_magnitude):
     outage_date = outages.loc[outage_indicator,'date']
     min_start = year_range[0]
     min_end = year_range[1]
-    discharges_outage_1 = di.Discharges_before_outage_by_time(outage_date, min_end,min_start)
+    discharges_outage_1 = Discharges_before_outage_by_time(outage_date, min_end,min_start)
     discharges_outage_1.sort_values(polatiry_or_magnitude, inplace = True)
     map_fig = go.Figure()
     map_fig.add_trace(go.Scattermapbox(
