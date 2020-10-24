@@ -70,23 +70,37 @@ stats = html.Div(
                                    for i in range(30)},
                             value=[5, 10])
         ]),
-        html.Div([
-            dcc.Dropdown(
-                id='time_series_id',
-                options=[{
-                    'label': 'Magnitud',
-                    'value': 'magnitude'
-                }, {
-                    'label': 'Current',
-                    'value': 'current'
-                }, {
-                    'label': 'Polarity',
-                    'value': 'polarity'
-                }],
-                multi=True,
-                value=['magnitude'],
-            )
-        ]),
+        dbc.Row([
+            dbc.Col([
+                html.Label(children='Showing:', id='select_label'),
+                dcc.Dropdown(
+                    id='time_series_id',
+                    options=[{
+                        'label': 'Magnitud',
+                        'value': 'magnitude'
+                    }, {
+                        'label': 'Current',
+                        'value': 'current'
+                    }, {
+                        'label': 'Polarity',
+                        'value': 'polarity'
+                    }],
+                    multi=True,
+                    value=['magnitude'],
+                )
+            ]),
+            dbc.Col([
+                html.Label(children='Resampling:', id='resample'),
+                dcc.RadioItems(id='yes_no',
+    options=[
+        {'label': 'No', 'value': 'no'},
+        {'label': 'Yes', 'value': 'yes'},
+    ],className='my_box_container',labelClassName='my_box_label',
+    value='MTL',
+    labelStyle={'display': 'inline-block'}
+)  
+            ])
+        ], ),
         dcc.Graph(id="line-fig"),
     ],
     className="ds4a-body",
