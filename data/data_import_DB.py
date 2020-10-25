@@ -32,4 +32,8 @@ engine = create_engine(engine_string)
 discharges = pd.read_sql_table('tbl_discharges', engine)
 outages = pd.read_sql_table('tbl_outages', engine)
 towers = pd.read_sql_table('tbl_towers', engine)
+
+#outages.iloc[0].astype(str)
 print('Data import done')
+#print(outages)
+#print(outages.dtypes)
