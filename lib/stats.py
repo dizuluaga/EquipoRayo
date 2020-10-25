@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 from datetime import timedelta
 from plotly.subplots import make_subplots
-from datetime import datetime as dt
+from datetime import datetime as dtm
 import json
 import numpy as np
 import pandas as pd
@@ -15,13 +15,22 @@ import os
 import geopandas as gpd
 
 from app import app
-import data.data_import as di
+import data.data_import_DB as di
 import lib.buffer as buf
 
 discharges = di.discharges
 towers = di.towers
 outages = di.outages
-discharges_all_outages = di.discharges_all_outages
+
+discharges_all_outages = pd.DataFrame(columns=discharges.columns)
+
+def Discharges_before_outage_by_time(outage_date, time_range, min_before=5):
+    datetime_f = outage_date - timedelta(minutes=min_before)
+    datetime_i = datetime_f - timedelta(minutes=time_range)
+    discharges_copy = discharges.copy()
+    discharges_before_outage_by_time = discharges_copy[(discharges['date'] > datetime_i) &
+                        (discharges_copy['date'] < datetime_f)].reset_index()
+    return discharges_before_outage_by_time
 
 mapbox_token = 'pk.eyJ1IjoiZGlhbmFwenA5NiIsImEiOiJja2dlNTUxbWExN2VkMnJxdTdpYmxrcWowIn0.BaVVonTGXIQavJojx-v4sw'
 mapstyle = 'mapbox://styles/dianapzp96/ckgijhjph0h3x19pfx3fpo5na'
@@ -146,10 +155,9 @@ def _update_graph(year_range, outage_indicator, polatiry_or_magnitude,
     outage_date = outages.loc[outage_indicator, 'date']
     min_start = year_range[0]
     min_end = year_range[1]
-    discharges_outage_1 = di.Discharges_before_outage_by_time(
-        outage_date, min_end, min_start)
-    discharges_outage_1.sort_values(polatiry_or_magnitude, inplace=True)
 
+    discharges_outage_1 = Discharges_before_outage_by_time(outage_date, min_end,min_start)
+    discharges_outage_1.sort_values(polatiry_or_magnitude, inplace = True)
     discharges_outage_1=gpd.GeoDataFrame(discharges_outage_1,\
          geometry=gpd.points_from_xy(discharges_outage_1.longitude, discharges_outage_1.latitude))
 
