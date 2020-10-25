@@ -29,8 +29,8 @@ engine_string = "postgresql+psycopg2://{user}:{password}@{host}:{port}/{database
 engine = create_engine(engine_string)
 
 # read failures table from database into pandas dataframe
-discharges = pd.read_sql_table('tbl_discharges', engine)
-outages = pd.read_sql_table('tbl_outages', engine)
+discharges = pd.read_sql_table('tbl_discharges', engine, index_col='id_discharges')
+outages = pd.read_sql_table('tbl_outages', engine, index_col='id_outages')
 towers = pd.read_sql_table('tbl_towers', engine)
 
 outages.iloc[0].astype(str)
