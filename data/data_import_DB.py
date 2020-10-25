@@ -35,5 +35,5 @@ towers = pd.read_sql_table('tbl_towers', engine)
 
 #outages.iloc[0].astype(str)
 print('Data import done')
-#print(outages)
-#print(outages.dtypes)
+print(outages)
+print(outages.dtypes)
