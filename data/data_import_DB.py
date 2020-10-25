@@ -33,8 +33,7 @@ discharges = pd.read_sql_table('tbl_discharges', engine, index_col='id_discharge
 outages = pd.read_sql_table('tbl_outages', engine, index_col='id_outages')
 towers = pd.read_sql_table('tbl_towers', engine)
 
-outages.iloc[0].astype(str)
+#outages.iloc[0].astype(str)
 print('Data import done')
-print('yes')
-#print(outages)
+print('worked')
 print(outages.dtypes)
