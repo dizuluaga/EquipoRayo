@@ -4,9 +4,10 @@ from dash.dependencies import Input, Output
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_table
+import numpy as np
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
 import json
 import dash_bootstrap_components as dbc
 from datetime import timedelta
@@ -31,4 +32,3 @@ app.layout = html.Div(
 
 if __name__ == "__main__":
     app.run_server(host="0.0.0.0", debug=True)
-
