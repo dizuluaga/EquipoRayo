@@ -122,8 +122,25 @@ layout = html.Div(
     value='MTL',
     labelStyle={'display': 'inline-block'}
 )  
-            ])
-        ], ),
+            ]),
+            dbc.Col([
+                html.Label(children='How:', id='resampling_method'),
+                dcc.Dropdown(
+                    id='resampling_dropdown',
+                    options=[{
+                        'label': 'Mean',
+                        'value': 'mean'
+                    }, {
+                        'label': 'Max',
+                        'value': 'max'
+                    }, {
+                        'label': 'Min',
+                        'value': 'min'
+                    }],
+                    multi=False,
+                    value='mean', 
+            ]),
+        ]),
         dcc.Graph(id="line-fig"),
     ],
     className="ds4a-body",
@@ -157,11 +174,12 @@ def _update_time_range_label(year_range):
         Input('outage_dropdown', 'value'),
         Input('polatiry_or_magnitude', 'value'),
         Input('buffer_input', 'value'),
-        Input('time_series_id', 'value')
+        Input('time_series_id', 'value'),
+        Input('yes_no','value')
     ],
 )
 def _update_graph(year_range, outage_indicator, polatiry_or_magnitude,
-                  buffer_dist, input_values):
+                  buffer_dist, input_values, yes_no_value):
     # print(year_range)
     print(input_values)
     # print(polatiry_or_magnitude)
@@ -241,13 +259,17 @@ def _update_graph(year_range, outage_indicator, polatiry_or_magnitude,
 
     ###################################
     df = discharges_outage_1.copy()
+    df.set_index('date', inplace=True)
+    if yes_no_value == 'yes':
+        df = df.resample('2min').agg('max')
+    print(df)
     # Add traces
     line_fig = make_subplots(rows=1, cols=len(input_values))
     # Add traces
     for i, variable in enumerate(input_values):
         line_fig.add_trace(
             go.Scatter(
-                x=df.date,
+                x=df.index,
                 y=df[variable],
                 mode='markers',
                 # mode='markers+lines',
