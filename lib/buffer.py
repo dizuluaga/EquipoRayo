@@ -15,8 +15,8 @@ x_buffer_5km, y_buffer_5km = list(buffer_5km.exterior.coords.xy)
 
 def buffer_line(distance):
     towers_buffer_planas = towers_buffer.to_crs('EPSG:3116')
-    buffer_dist = LineString(towers_buffer_planas['geometry']).buffer(
-        distance * 1000)
+    buffer_dist = LineString(
+        towers_buffer_planas['geometry']).buffer(distance * 1000)
     buffer_dist = gpd.GeoDataFrame(geometry=[buffer_dist],
                                    crs='EPSG:3116').to_crs('EPSG:4326')
     x_buffer, y_buffer = list(buffer_dist.iloc[0, 0].exterior.coords.xy)

@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 from app import app
 from dash.dependencies import ClientsideFunction, Input, Output, State
 
-tabs = html.Div(
+layout = html.Div(
     [
         dcc.Tabs(
             id="tabs-styled-with-props",

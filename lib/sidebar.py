@@ -37,6 +37,16 @@ ISA_Img = html.Div(
     ],
 )
 
+MINTIC_Img = html.Div(
+    children=[
+        html.Img(
+            src=app.get_asset_url("logo-mintic.png"),
+            id="logo-mintic",
+            style={"width": "100%"},
+        )
+    ],
+)
+
 #############################################################################
 # State Dropdown
 #############################################################################
@@ -83,6 +93,17 @@ sidebar = html.Div(
         ####################################################
         html.H4("Team 4"),
         html.Hr(),
+        #dcc.Link(html.Button('back'), href='www.google.com'),
+        dbc.Nav(
+            [
+                dbc.NavLink("Exploratory Analysis", href="/page-1", id="page-1-link", className='text-dark'),
+                dbc.NavLink(html.Label("Outage prediction"), href="/page-2", id="page-2-link", className='text-dark'),
+                dbc.NavLink("Quienes somos", href="/page-3", id="page-3-link", className='text-dark'),
+            ],
+            vertical=True,
+            pills=True,
+        ),
+        html.Hr(),
         html.H5("Select dates"),
         date_picker,
         html.Hr(),
@@ -90,6 +111,7 @@ sidebar = html.Div(
         dropdown,
         html.Hr(),
         ISA_Img,
+        MINTIC_Img
     ],
     className="ds4a-sidebar",
 )

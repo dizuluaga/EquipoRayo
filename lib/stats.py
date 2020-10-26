@@ -15,7 +15,7 @@ import os
 import geopandas as gpd
 
 from app import app
-import data.data_import_DB as di
+import data.data_import as di
 import lib.buffer as buf
 
 discharges = di.discharges
@@ -38,8 +38,22 @@ mapstyle = 'mapbox://styles/dianapzp96/ckgijhjph0h3x19pfx3fpo5na'
 # #################################################################################
 # Here the layout for the plots to use.
 #################################################################################
-stats = html.Div(
-    [
+
+title = html.Div(
+    className="ds4a-title",
+    children=[
+        dbc.Row(
+            dbc.Col(html.H1("Comuneros-Primavera Power Line"),
+                    width={
+                        "size": 7,
+                        "offset": 3,
+                        'color': '#F8F9F9'
+                    }))
+    ],
+    id="title",
+)
+layout = html.Div(
+    [title,
         html.Div([
             dcc.Graph(id="fig-id", style={
                 'width': '100%',
@@ -163,7 +177,7 @@ def _update_graph(year_range, outage_indicator, polatiry_or_magnitude,
 
     if not buffer_dist:
         buffer_dist = '10'
-    # print(buffer_dist)
+    print(buffer_dist)
     lon_x, lon_y, gdf_buffer = buf.buffer_line(float(buffer_dist))
     discharges_outage_1 = discharges_outage_1.loc[discharges_outage_1.within(
         gdf_buffer.geometry.iloc[0])]

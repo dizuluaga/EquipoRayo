@@ -55,3 +55,17 @@
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
 }
+
+.nav-tabs > li.active > a {
+  color: #3c5a78;
+  font-size: 16px;
+}
+.nav-tabs > li > a {
+  fontColor': 'blue';
+  color: #575757;
+}
+
+.nav.navbar-nav.navbar-right li a {
+  fontColor': 'blue';
+  color: rgb(116, 116, 128);
+}

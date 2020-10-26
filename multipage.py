@@ -1,91 +1,97 @@
+"""
+This app creates a simple sidebar layout using inline style arguments and the
+dbc.Nav component.
+
+dcc.Location is used to track the current location. There are two callbacks,
+one uses the current location to render the appropriate page content, the other
+uses the current location to toggle the "active" properties of the navigation
+links.
+
+For more details on building multi-page Dash applications, check out the Dash
+documentation: https://dash.plot.ly/urls
+"""
 import dash
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 
-import flask
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-app = dash.Dash(__name__)
+# the style arguments for the sidebar. We use position:fixed and a fixed width
+SIDEBAR_STYLE = {
+    "position": "fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "16rem",
+    "padding": "2rem 1rem",
+    "background-color": "#f8f9fa",
+}
 
-url_bar_and_content_div = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
-])
+# the styles for the main content position it to the right of the sidebar and
+# add some padding.
+CONTENT_STYLE = {
+    "margin-left": "18rem",
+    "margin-right": "2rem",
+    "padding": "2rem 1rem",
+}
 
-layout_index = html.Div([
-    dcc.Link('Navigate to "/page-1"', href='/page-1'),
-    html.Br(),
-    dcc.Link('Navigate to "/page-2"', href='/page-2'),
-])
+sidebar = html.Div(
+    [
+        html.H2("Sidebar", className="display-4"),
+        html.Hr(),
+        html.P(
+            "A simple sidebar layout with navigation links", className="lead"
+        ),
+        dbc.Nav(
+            [
+                dbc.NavLink("Page 1", href="/page-1", id="page-1-link"),
+                dbc.NavLink("Page 2", href="/page-2", id="page-2-link"),
+                dbc.NavLink("Page 3", href="/page-3", id="page-3-link"),
+            ],
+            vertical=True,
+            pills=True,
+        ),
+    ],
+    style=SIDEBAR_STYLE,
+)
 
-layout_page_1 = html.Div([
-    html.H2('Page 1'),
-    dcc.Input(id='input-1-state', type='text', value='Montreal'),
-    dcc.Input(id='input-2-state', type='text', value='Canada'),
-    html.Button(id='submit-button', n_clicks=0, children='Submit'),
-    html.Div(id='output-state'),
-    html.Br(),
-    dcc.Link('Navigate to "/"', href='/'),
-    html.Br(),
-    dcc.Link('Navigate to "/page-2"', href='/page-2'),
-])
+content = html.Div(id="page-content", style=CONTENT_STYLE)
 
-layout_page_2 = html.Div([
-    html.H2('Page 2'),
-    dcc.Dropdown(
-        id='page-2-dropdown',
-        options=[{'label': i, 'value': i} for i in ['LA', 'NYC', 'MTL']],
-        value='LA'
-    ),
-    html.Div(id='page-2-display-value'),
-    html.Br(),
-    dcc.Link('Navigate to "/"', href='/'),
-    html.Br(),
-    dcc.Link('Navigate to "/page-1"', href='/page-1'),
-])
-
-# index layout
-app.layout = url_bar_and_content_div
-
-# "complete" layout
-app.validation_layout = html.Div([
-    url_bar_and_content_div,
-    layout_index,
-    layout_page_1,
-    layout_page_2,
-])
+app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 
 
-# Index callbacks
-@app.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname')])
-def display_page(pathname):
-    if pathname == "/page-1":
-        return layout_page_1
+# this callback uses the current pathname to set the active state of the
+# corresponding nav link to true, allowing users to tell see page they are on
+@app.callback(
+    [Output(f"page-{i}-link", "active") for i in range(1, 4)],
+    [Input("url", "pathname")],
+)
+def toggle_active_links(pathname):
+    if pathname == "/":
+        # Treat page 1 as the homepage / index
+        return True, False, False
+    return [pathname == f"/page-{i}" for i in range(1, 4)]
+
+
+@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
+def render_page_content(pathname):
+    if pathname in ["/", "/page-1"]:
+        return html.P("This is the content of page 1!")
     elif pathname == "/page-2":
-        return layout_page_2
-    else:
-        return layout_index
+        return html.P("This is the content of page 2. Yay!")
+    elif pathname == "/page-3":
+        return html.P("Oh cool, this is page 3!")
+    # If the user tries to reach a different page, return a 404 message
+    return dbc.Jumbotron(
+        [
+            html.H1("404: Not found", className="text-danger"),
+            html.Hr(),
+            html.P(f"The pathname {pathname} was not recognised..."),
+        ]
+    )
 
 
-# Page 1 callbacks
-@app.callback(Output('output-state', 'children'),
-              [Input('submit-button', 'n_clicks')],
-              [State('input-1-state', 'value'),
-               State('input-2-state', 'value')])
-def update_output(n_clicks, input1, input2):
-    return ('The Button has been pressed {} times,'
-            'Input 1 is "{}",'
-            'and Input 2 is "{}"').format(n_clicks, input1, input2)
-
-
-# Page 2 callbacks
-@app.callback(Output('page-2-display-value', 'children'),
-              [Input('page-2-dropdown', 'value')])
-def display_value(value):
-    print('display_value')
-    return 'You have selected "{}"'.format(value)
-
-
-if __name__ == '__main__':
-    app.run_server(debug=True)
+if __name__ == "__main__":
+    app.run_server(port=8888)
