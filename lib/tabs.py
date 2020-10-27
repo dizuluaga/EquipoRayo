@@ -14,8 +14,39 @@ import plotly.graph_objects as go
 from app import app
 from dash.dependencies import ClientsideFunction, Input, Output, State
 
+cards = [
+    dbc.Card(
+        [
+            html.H2(f"{0.85*100:.1f}%", className="card-title"),
+            html.P("Model Training Accuracy", className="card-text"),
+        ],
+        body=True,
+        color="light",
+    ),
+    dbc.Card(
+        [
+            html.H2(f"{0.75*100:.1f}%", className="card-title"),
+            html.P("Model Test Accuracy", className="card-text"),
+        ],
+        body=True,
+        color="dark",
+        inverse=True,
+    ),
+    dbc.Card(
+        [
+            html.H2("50 / 60", className="card-title"),
+            html.P("Train / Test Split", className="card-text"),
+        ],
+        body=True,
+        color="primary",
+        inverse=True,
+    ),
+]
+
+
 layout = html.Div(
-    [
+    [dbc.Row([dbc.Col(card) for card in cards]),
+     html.Hr(),
         dcc.Tabs(
             id="tabs-styled-with-props",
             value='tab-1',

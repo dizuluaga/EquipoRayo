@@ -51,8 +51,7 @@
 }
 
 .my_box_label {
-  background: #d1d8da;
-  padding: 0.5rem 1rem;
+  padding: 0.05rem 0.5rem;
   border-radius: 0.5rem;
 }
 
@@ -64,8 +63,7 @@
   fontColor': 'blue';
   color: #575757;
 }
-
 .nav.navbar-nav.navbar-right li a {
   fontColor': 'blue';
   color: rgb(116, 116, 128);
-}
+};

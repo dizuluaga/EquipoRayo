@@ -96,8 +96,8 @@ sidebar = html.Div(
         #dcc.Link(html.Button('back'), href='www.google.com'),
         dbc.Nav(
             [
-                dbc.NavLink("Exploratory Analysis", href="/page-1", id="page-1-link", className='text-dark'),
-                dbc.NavLink(html.Label("Outage prediction"), href="/page-2", id="page-2-link", className='text-dark'),
+                dbc.NavLink("Exploratory Analysis", href="/EDA", id="page-1-link", className='text-dark'),
+                dbc.NavLink("Outage prediction", href="/MODEL", id="page-2-link", className='text-dark'),
                 dbc.NavLink("Quienes somos", href="/page-3", id="page-3-link", className='text-dark'),
             ],
             vertical=True,
@@ -115,3 +115,4 @@ sidebar = html.Div(
     ],
     className="ds4a-sidebar",
 )
+
