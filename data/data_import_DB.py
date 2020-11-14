@@ -115,7 +115,7 @@ def filter_towers(power_line_name):
     ],
     [State("memory-outages", "data")],
 )
-def filter_towers(power_line_name, outage_indicator,data_outages):
+def filter_discharges(power_line_name, outage_indicator,data_outages):
     outages = pd.DataFrame.from_dict(data_outages)
     table_id = lineas_dict_numbers[power_line_name]
     outages = pd.read_sql_table(f"tbl_outages_{table_id}", engine)

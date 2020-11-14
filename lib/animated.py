@@ -18,12 +18,12 @@ from shapely.geometry import LineString, Point
 from dash.exceptions import PreventUpdate
 from app import app
 import lib.buffer as buf
-
+import data.data_import as di
 from lib import stats
 
-# discharges = di.discharges
-# towers = di.towers
-# outages = di.outages
+discharges = di.discharges
+towers = di.towers
+outages = di.outages
 
 def get_frames(minutes_animation, outage_date, variable='magnitude', discharges = None):
     frames = []

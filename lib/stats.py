@@ -17,6 +17,8 @@ import geopandas as gpd
 from app import app
 import lib.buffer as buf
 import lib.animated
+import data.data_import as di
+import data.data_import_DB
 
 discharges = di.discharges
 towers = di.towers
@@ -97,7 +99,7 @@ layout = html.Div(
                                     type="dot",
                                     fullscreen=False,
                                 )
-                            ]
+                            ],
                         ),
                         dcc.Tab(
                             label="Animated",
@@ -110,7 +112,7 @@ layout = html.Div(
                             ),
                         ),
                     ],
-                    persistence=True
+                    persistence=True,
                 ),
             ]
         ),
@@ -214,7 +216,7 @@ layout = html.Div(
                                 {"label": "Polarity", "value": "polarity"},
                             ],
                             multi=True,
-                            clearable =False,
+                            clearable=False,
                             value=["magnitude"],
                         ),
                     ]
@@ -292,14 +294,6 @@ layout = html.Div(
     className="ds4a-body",
 )
 
-# @app.callback(
-#     Output('outage_dropdown', 'options'),
-#     [Input('power_line_name', 'value'),
-#      Input('memory-discharges', 'data')])
-# def set_cities_options(selected_country):
-#     towers =  pd.DataFrame.from_dict(data)
-#     return [{'label': i, 'value': i} for i in all_options[selected_country]]
-
 
 @app.callback(
     output=Output(component_id="polarity-label", component_property="children"),
@@ -309,7 +303,6 @@ def _update_label(label_selected):
     return "Select value to display: {}".format(label_selected)
 
 
-# TODO Change title
 @app.callback(
     output=[
         Output(component_id="title-id", component_property="children"),
@@ -322,10 +315,9 @@ def _update_label(label_selected):
 )
 def _update_time_range_label(power_line, data_outages):
     title_towers = "{} Power Line".format(lineas_dict[power_line])
-
     outages = pd.DataFrame.from_dict(data_outages)
     outages["date"] = pd.to_datetime(outages["date"])
-    print('updating dropdown')
+    print("updating dropdown")
     options_dropdown = [
         {
             "label": f"{num+1}: " + outages.loc[i, "date"].strftime("%Y-%m-%d"),
@@ -334,11 +326,6 @@ def _update_time_range_label(power_line, data_outages):
         for num, i in enumerate(outages.index)
     ]
     return title_towers, options_dropdown
-
-
-# @app.callback(Output("outage_dropdown", "value"), [Input("outage_dropdown", "options")])
-# def set_cities_value(available_options):
-#     return available_options[0]["value"]
 
 
 @app.callback(
@@ -350,7 +337,11 @@ def _update_time_range_label(year_range):
 
 
 @app.callback(
-    output=[Output("fig-id", "figure"), Output("line-fig", "figure"), Output('confirm', 'displayed')],
+    output=[
+        Output("fig-id", "figure"),
+        Output("line-fig", "figure"),
+        Output("confirm", "displayed"),
+    ],
     inputs=[
         Input(component_id="year_slider", component_property="value"),
         Input("outage_dropdown", "value"),
@@ -384,9 +375,9 @@ def _update_graph(
     outages = pd.DataFrame.from_dict(data_outages)
     discharges = pd.DataFrame.from_dict(data_discharges)
     if discharges.empty:
-        print('emptyyyyy')
+        print("emptyyyyy")
         return dash.no_update, dash.no_update, True
- 
+
     else:
         print("outages", outages.head(2))
         outages["date"] = pd.to_datetime(outages["date"])
@@ -458,7 +449,7 @@ def _update_graph(
                 name=f"{buffer_dist}km buffer",
                 marker=go.scattermapbox.Marker(
                     size=8, color="rgb(242, 177, 172)", opacity=0.3
-                )
+                ),
             )
         )
         centro = gdf_buffer.centroid
@@ -514,7 +505,7 @@ def _update_graph(
             )
 
         line_fig.update_layout(
-            margin={"t": 5, "l": 0, "b": 10, 'r':0},
+            margin={"t": 5, "l": 0, "b": 10, "r": 0},
             shapes=[
                 # 1st highlight during Feb 4 - Feb 6
                 dict(
@@ -556,5 +547,5 @@ def _update_graph(
         if len(input_values) == 1:
             line_fig.update_yaxes(title=input_values[0])
         # line_fig['layout']['uirevision'] = 'no reset of zoom'
-        print('figs updated')
+        print("figs updated")
         return map_fig, line_fig, dash.no_update
