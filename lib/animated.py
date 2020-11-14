@@ -15,10 +15,8 @@ import os
 import geopandas as gpd
 import geopandas as gpd
 from shapely.geometry import LineString, Point
-import data.data_import as di
 from dash.exceptions import PreventUpdate
 from app import app
-import data.data_import as di
 import lib.buffer as buf
 
 from lib import stats

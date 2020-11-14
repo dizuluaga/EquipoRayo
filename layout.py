@@ -24,8 +24,6 @@ from app import app
 # LOAD THE DIFFERENT FILES
 from lib import sidebar, stats, tabs,about_us
 
-import data.data_import_DB
-
 # PLACE THE COMPONENTS IN THE LAYOUT
 content = html.Div(id="page-content", children=[])
 

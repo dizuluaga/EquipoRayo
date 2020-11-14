@@ -15,7 +15,6 @@ import os
 import geopandas as gpd
 
 from app import app
-import data.data_import as di
 import lib.buffer as buf
 import lib.animated
 
