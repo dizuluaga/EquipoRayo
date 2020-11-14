@@ -24,17 +24,22 @@ from app import app
 ####################################################################################
 
 DS4A_Img = html.Div(
-    children=[html.Img(src=app.get_asset_url("ds4a-img.svg"), id="ds4a-image",)],
+    children=[
+        html.Img(
+            src=app.get_asset_url("ds4a-img.svg"),
+            id="ds4a-image",
+        )
+    ],
 )
 
 ISA_Img = html.Div(
     children=[
         html.Img(
-            src=app.get_asset_url("ISA_logo.png"),
+            src=app.get_asset_url("ISA_logoblanco.png"),
             id="logo-image",
-            style={"width": "100%"},
+            style={"width": "85%"},
         )
-    ],
+    ], style={'textAlign': 'center'}
 )
 
 MINTIC_Img = html.Div(
@@ -44,27 +49,7 @@ MINTIC_Img = html.Div(
             id="logo-mintic",
             style={"width": "100%"},
         )
-    ],
-)
-
-#############################################################################
-# State Dropdown
-#############################################################################
-# DATA_DIR = "data"
-# states_path = os.path.join(DATA_DIR, "states.json")
-# with open(states_path) as f:
-#     states = json.loads(f.read())
-#  outages = pd.read_csv('./data/outages.csv', header=0, delimiter=',', index_col=0,
-#                      names=['date', 'year', 'time', 'cause', 'outages_number', 'r_inf', 'r_sup'], parse_dates=['date'])
-available_indicators = stats.outages.index
-dropdown = dcc.Dropdown(
-    id="outage_dropdown",
-    options=[
-        {"label": stats.outages.loc[i, "date"].strftime("%Y-%m-%d"), "value": i}
-        for i in available_indicators
-    ],
-    value="57",
-    multi=False,
+    ],style={'textAlign': 'center'}
 )
 
 
@@ -93,26 +78,45 @@ sidebar = html.Div(
         ####################################################
         html.H4("Team 4"),
         html.Hr(),
-        #dcc.Link(html.Button('back'), href='www.google.com'),
+        # dcc.Link(html.Button('back'), href='www.google.com'),
         dbc.Nav(
             [
-                dbc.NavLink("Exploratory Analysis", href="/EDA", id="page-1-link", className='text-dark'),
-                dbc.NavLink("Outage prediction", href="/MODEL", id="page-2-link", className='text-dark'),
-                dbc.NavLink("Quienes somos", href="/page-3", id="page-3-link", className='text-dark'),
+                dbc.NavLink(
+                        html.Span(
+                            [html.I(className="fas fa-cloud", style={"margin-right": "0.5rem"}),
+                             "Exploratory Analysis", 
+                            ],
+                    ),
+                    href="/exploratory",
+                    id="page-1-link",
+                    className='text-dark',
+                ),
+                dbc.NavLink(
+                    html.Span(
+                            [html.I(className="fa fa-tasks", style={"margin-right": "0.5rem"}),
+                             "Outage prediction", 
+                            ],
+                    ),
+                    href="/model",
+                    id="page-2-link",
+                    className="text-dark",
+                ),
+                dbc.NavLink(
+                   html.Span(
+                            [html.I(className="fa fa-users", style={"margin-right": "15px"}),
+                             "About us", 
+                            ],),
+                    href="/about-us",
+                    id="page-3-link",
+                    className="text-dark",
+                ),
             ],
             vertical=True,
-            pills=True,
+            pills=True
         ),
         html.Hr(),
-        html.H5("Select dates"),
-        date_picker,
-        html.Hr(),
-        html.H5("Select outage"),
-        dropdown,
-        html.Hr(),
         ISA_Img,
-        MINTIC_Img
+        MINTIC_Img,
     ],
     className="ds4a-sidebar",
 )
-

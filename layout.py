@@ -1,4 +1,5 @@
 # Libraries
+from lib import about_us
 import dash
 from dash.dependencies import Input, Output
 import dash_html_components as html
@@ -17,24 +18,27 @@ import sys
 from app import app
 
 ###########################################################
-#
 #           APP LAYOUT:
-#
 ###########################################################
 
 # LOAD THE DIFFERENT FILES
-from lib import sidebar, stats, tabs
+from lib import sidebar, stats, tabs,about_us
+
+import data.data_import_DB
 
 # PLACE THE COMPONENTS IN THE LAYOUT
 content = html.Div(id="page-content", children=[])
 
 app.layout = html.Div(
-    [dcc.Location(id="url", refresh=False), sidebar.sidebar, content],
+    [dcc.ConfirmDialog(
+        id='confirm',
+        message='No outages were found! Please select another date.',
+    ),dcc.Store(id='memory-towers'),dcc.Store(id='memory-discharges'),dcc.Store(id='memory-outages'),dcc.Location(id="url", refresh=False), sidebar.sidebar, content],
     className="ds4a-app",  # You can also add your own css files by locating them into the assets folder
 )
 
 #poner los nombres de los href de sidebar.py
-pathnames_dict = {"/page-1": "/EDA", "/page-2": "/MODEL"}
+pathnames_dict = {"/page-1": "/exploratory", "/page-2": "/model","/page-3":'/about-us'}
 
 # this callback uses the current pathname to set the active state of the
 # corresponding nav link to true, allowing users to tell see page they are on
@@ -43,14 +47,11 @@ pathnames_dict = {"/page-1": "/EDA", "/page-2": "/MODEL"}
     [Input("url", "pathname")],
 )
 def toggle_active_links(pathname):
-    # if pathname == "/":
+    if pathname == "/":
     # Treat page 1 as the homepage / index
-    # return True, False, False
-    return [pathname == pathnames_dict.get(f"/page-{i}") for i in range(1, 4)]
-
-
-print("epaa" + pathnames_dict["/page-1"])
-
+        return False, True, False
+    else:
+        return [pathname == pathnames_dict.get(f"/page-{i}") for i in range(1, 4)]
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):
@@ -58,6 +59,8 @@ def display_page(pathname):
         return stats.layout
     elif pathname == pathnames_dict["/page-2"]:
         return tabs.layout
+    elif pathname == pathnames_dict["/page-3"]:
+        return about_us.layout
     elif pathname == "/":
         return html.Div(html.H1("Isa Project"), className="ds4a-body")
         # TODO
