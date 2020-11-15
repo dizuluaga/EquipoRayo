@@ -121,7 +121,7 @@ def filter_outages(power_line_name):
     outages = pd.read_sql_table(f"tbl_outages_{table_id}", engine)
     options_dropdown = [
         {
-            "label": f"{num+1}: " + outages.loc[i, "date"].strftime("%Y-%m-%d"),
+            "label": f"{num+1}: " + outages.loc[i, "date"].strftime("%Y-%m-%d %H-%M"),
             "value": i,
         }
         for num, i in enumerate(outages.index)
@@ -146,7 +146,7 @@ def filter_discharges(power_line_name, outage_indicator, data_outages):
     # outages = pd.read_sql_table(f"tbl_outages_{table_id}", engine)
     outages["date"] = pd.to_datetime(outages["date"])
     outage_date = outages.loc[int(outage_indicator), "date"]
-    print("Indicador DB", outage_indicator)
+    print("date outage DB", outage_date)
     discharges = get_discharges(date_first=outage_date, num_days=2, table_id=table_id)
     return (discharges.to_dict("records"),)
 
@@ -157,10 +157,10 @@ def filter_discharges(power_line_name, outage_indicator, data_outages):
     ],
     [
         Input(component_id="power_line_name_model", component_property="value"),
-        Input("outage_dropdown_model", "value")
+        Input("outage_dropdown_model", "value"),
+        Input("memory-outages-model", "data")
     ],
-    [State("memory-outages-model", "data")],
-    
+    # [State("memory-outages-model", "data")],
 )
 @cache.memoize()
 def filter_features(power_line_name, outage_indicator, data_outages):
@@ -169,7 +169,7 @@ def filter_features(power_line_name, outage_indicator, data_outages):
     features_df = pd.read_sql_query(
         f"""SELECT * FROM tbl_features
                         WHERE line = {table_id} """,
-        engine, index_col = 'id_registro'
+        engine
     )
     outages = pd.read_sql_table(f"tbl_outages_{table_id}", engine)
     outages["date"] = pd.to_datetime(outages["date"])
@@ -181,5 +181,4 @@ def filter_features(power_line_name, outage_indicator, data_outages):
                             where date BETWEEN ('{outage_date}'::timestamp - '24 hours'::interval) AND ('{outage_date}'::timestamp - '5 minutes'::interval)""",
             engine,
         )
-    
     return features_df.to_dict("records"), df_clusters.to_dict("records")

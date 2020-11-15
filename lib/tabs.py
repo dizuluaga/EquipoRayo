@@ -115,7 +115,7 @@ layout = html.Div(
                                 "Select outage:",
                                 dcc.Loading(
                                     dcc.Dropdown(
-                                        id="outage_dropdown_model", value="102"
+                                        id="outage_dropdown_model", value="101"
                                     )
                                 ),
                             ],
@@ -143,8 +143,9 @@ layout = html.Div(
             editable=False,  # allow editing of data inside all cells
             fixed_rows={'headers': True},
             filter_action="none",  # allow filtering of data by user ('native') or not ('none')
-            sort_action="native",  # enables data to be sorted per-column by user or not ('none')
+            sort_action="none",  # enables data to be sorted per-column by user or not ('none')
             sort_mode="multi",  # sort across 'multi' or 'single' columns
+            sort_by=[{'column_id':'label', 'direction':'desc'}],
             # column_selectable="multi",  # allow users to select 'multi' or 'single' columns
             # row_selectable="multi",  # allow users to select 'multi' or 'single' rows
             row_deletable=False,  # choose if user can delete a row (True) or not (False)
@@ -213,7 +214,8 @@ def render_content(tab):
 
 
 @app.callback(
-    [Output("fig-clusters", "figure"),Output('datatable-features', 'data'),Output('datatable-features', 'columns')],
+    [Output("fig-clusters", "figure"),Output('datatable-features', 'data'),Output('datatable-features', 'columns'),
+     Output('datatable-features', 'style_data_conditional')],
     [
         Input("power_line_name_model", "value"),
         Input("outage_dropdown_model", "value"),
@@ -227,6 +229,7 @@ def updating(power_line_name_model, outage_indicatoes, data_towers, data_cluster
     towers = pd.DataFrame.from_dict(data_towers)
     df_clusters = pd.DataFrame.from_dict(data_clusters)
     df_features = pd.DataFrame.from_dict(data_features)
+    df_features.set_index('id_registro', inplace=True)
     # outages = pd.DataFrame.from_dict(data_outages)
     # discharges = pd.DataFrame.from_dict(data_discharges)
     print("Hola")
@@ -267,21 +270,6 @@ def updating(power_line_name_model, outage_indicatoes, data_towers, data_cluster
         )
     )
 
-    # map_fig.add_trace(
-    #     go.Scattermapbox(
-    #         lat=df_clusters.latitude,
-    #         lon=df_clusters.longitude,
-    #         mode="markers",  # markers+lines
-    #         marker=go.scattermapbox.Marker(
-    #             size=7, opacity=0.7, color=df_clusters.cluster,
-    #         ),
-    #         name="Clusters",
-    #         showlegend=True,
-    #         # showscale=False,
-    #         hovertemplate="longitude: %{lon:.2f}<br>" + "latitude: %{lat:.2f}<br>",
-    #     )
-    # )
-
     lon_x, lon_y, gdf_buffer = buf.buffer_line(10, towers_buffer=towers)
     centro = gdf_buffer.centroid
     x = centro.x.iloc[0]
@@ -295,22 +283,8 @@ def updating(power_line_name_model, outage_indicatoes, data_towers, data_cluster
             accesstoken=mapbox_token,
             style=mapstyle,
             center=dict(lat=y, lon=x),
-            zoom=9,
+            zoom=8,
         ),
-        #     legend=dict(
-        #     x=0,
-        #     y=1,
-        #     traceorder="reversed",
-        #     title_font_family="Times New Roman",
-        #     font=dict(
-        #         family="Courier",
-        #         size=12,
-        #         color="black"
-        #     ),
-        #     bgcolor="LightSteelBlue",
-        #     bordercolor="Black",
-        #     borderwidth=2
-        # )
     )
     map_fig["layout"]["uirevision"] = "no reset of zoom"
     formato = Format(
@@ -329,16 +303,34 @@ def updating(power_line_name_model, outage_indicatoes, data_towers, data_cluster
                 group_delimiter='.',
                 decimal_delimiter=',')
     
+    df_clusters.to_excel('df_clustrs.xlsx')
+    df_features.to_excel('df_features.xlsx')
     df_features.index = pd.to_numeric(df_features.index)
     df_features.index.name = 'Cluster'
     df_table = df_features.join(df_clusters.drop_duplicates('cluster').set_index('cluster')[['date_outage']]).dropna()
+    
     df_table.reset_index(inplace=True)
     df_table.index = df_table.index.astype('int')
     cols = df_table.columns.drop('date_outage')
     df_table[cols] = df_table[cols].apply(pd.to_numeric)
     
     df_numeric = df_table.select_dtypes(exclude=['object'])
+    df_numeric.sort_values('Cluster', ascending=True, inplace=True)
+    df_numeric.columns = df_numeric.columns.map(lambda x:x.replace('_', ' '))
+    
     cols = [{"name": i, "id": i, 'type': 'numeric',
             'format':formato_int if i in ['Cluster','label','line'] else formato} for i in df_numeric.columns]
-    return map_fig, df_numeric.to_dict('records'), cols
+    
+    style_data_conditional=[
+        {
+            'if': {
+                'filter_query': '{label} = 1'
+            },
+            'backgroundColor': '#FF4136',
+            'color': 'white',
+            'fontWeight': 'bold'
+        },
+    ]
+    
+    return map_fig, df_numeric.to_dict('records'), cols, style_data_conditional
 
