@@ -22,21 +22,35 @@ from app import app
 ###########################################################
 
 # LOAD THE DIFFERENT FILES
-from lib import sidebar, stats, tabs,about_us
+from lib import sidebar, stats, tabs, about_us
+
+import data.data_import_DB
 
 # PLACE THE COMPONENTS IN THE LAYOUT
 content = html.Div(id="page-content", children=[])
 
 app.layout = html.Div(
-    [dcc.ConfirmDialog(
-        id='confirm',
-        message='No outages were found! Please select another date.',
-    ),dcc.Store(id='memory-towers'),dcc.Store(id='memory-discharges'),dcc.Store(id='memory-outages'),dcc.Location(id="url", refresh=False), sidebar.sidebar, content],
+    [
+        dcc.ConfirmDialog(
+            id="confirm",
+            message="No outages were found! Please select another date.",
+        ),
+        dcc.Store(id="memory-towers"),
+        dcc.Store(id="memory-discharges"),
+        dcc.Store(id="memory-outages"),
+        dcc.Location(id="url", refresh=False),
+        sidebar.sidebar,
+        content,
+    ],
     className="ds4a-app",  # You can also add your own css files by locating them into the assets folder
 )
 
-#poner los nombres de los href de sidebar.py
-pathnames_dict = {"/page-1": "/exploratory", "/page-2": "/model","/page-3":'/about-us'}
+# poner los nombres de los href de sidebar.py
+pathnames_dict = {
+    "/page-1": "/exploratory",
+    "/page-2": "/model",
+    "/page-3": "/about-us",
+}
 
 # this callback uses the current pathname to set the active state of the
 # corresponding nav link to true, allowing users to tell see page they are on
@@ -46,10 +60,11 @@ pathnames_dict = {"/page-1": "/exploratory", "/page-2": "/model","/page-3":'/abo
 )
 def toggle_active_links(pathname):
     if pathname == "/":
-    # Treat page 1 as the homepage / index
+        # Treat page 1 as the homepage / index
         return False, True, False
     else:
         return [pathname == pathnames_dict.get(f"/page-{i}") for i in range(1, 4)]
+
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):

@@ -102,3 +102,8 @@
   border-right: 1px solid lightgrey !important;
   border-top: 3px solid #e36209 !important;
 }
+.dash-spreadsheet-container table {
+  --accent: #1EAEDB !important;
+  --selected-background: #3639ff !important;
+  --selected-color: #3C3C3C !important;
+}

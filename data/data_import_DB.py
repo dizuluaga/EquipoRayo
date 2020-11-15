@@ -19,6 +19,16 @@ from app import app
 import pandas as pd
 from sqlalchemy import create_engine
 import os
+from flask_caching import Cache
+
+
+cache = Cache(app.server, config={
+    # try 'filesystem' if you don't want to setup redis
+     'CACHE_DIR': 'cache',
+    'CACHE_TYPE': 'filesystem',
+    # 'CACHE_REDIS_URL': os.environ.get('REDIS_URL', '')
+})
+
 
 credenciales = dict(
     POSTGRES_DB="db_isa",
@@ -85,6 +95,7 @@ def get_discharges(date_first="2018-04-05", num_days=1, table_id=1):
         Input(component_id="power_line_name", component_property="value"),
     ],
 )
+@cache.memoize(timeout=100)
 def filter_outages(power_line_name):
     table_id = lineas_dict_numbers[power_line_name]
     outages = pd.read_sql_table(f"tbl_outages_{table_id}", engine)
@@ -99,6 +110,7 @@ def filter_outages(power_line_name):
         Input(component_id="power_line_name", component_property="value"),
     ],
 )
+@cache.memoize(timeout=100)
 def filter_towers(power_line_name):
     table_id = lineas_dict_numbers[power_line_name]
     towers = pd.read_sql_table(f"tbl_towers_{table_id}", engine)
@@ -115,6 +127,7 @@ def filter_towers(power_line_name):
     ],
     [State("memory-outages", "data")],
 )
+@cache.memoize(timeout=100)
 def filter_discharges(power_line_name, outage_indicator,data_outages):
     outages = pd.DataFrame.from_dict(data_outages)
     table_id = lineas_dict_numbers[power_line_name]

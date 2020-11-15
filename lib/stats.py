@@ -13,13 +13,16 @@ import numpy as np
 import pandas as pd
 import os
 import geopandas as gpd
+import data.data_import_DB
 
 from app import app
 import lib.buffer as buf
 import lib.animated
 import data.data_import as di
-import data.data_import_DB
 
+from flask_caching.backends import FileSystemCache
+# import data.data_import_DB
+# 
 discharges = di.discharges
 towers = di.towers
 outages = di.outages
@@ -74,6 +77,17 @@ title = html.Div(
     ],
     id="title",
 )
+
+from flask_caching import Cache
+
+
+cache = Cache(app.server, config={
+    # try 'filesystem' if you don't want to setup redis
+     'CACHE_DIR': 'cache',
+    'CACHE_TYPE': 'filesystem',
+    # 'CACHE_REDIS_URL': os.environ.get('REDIS_URL', '')
+})
+
 layout = html.Div(
     [
         title,
@@ -302,7 +316,6 @@ layout = html.Div(
 def _update_label(label_selected):
     return "Select value to display: {}".format(label_selected)
 
-
 @app.callback(
     output=[
         Output(component_id="title-id", component_property="children"),
@@ -313,6 +326,7 @@ def _update_label(label_selected):
         Input("memory-outages", "data"),
     ],
 )
+@cache.memoize(timeout=100)
 def _update_time_range_label(power_line, data_outages):
     title_towers = "{} Power Line".format(lineas_dict[power_line])
     outages = pd.DataFrame.from_dict(data_outages)
@@ -357,6 +371,7 @@ def _update_time_range_label(year_range):
         Input("memory-outages", "data"),
     ],
 )
+@cache.memoize(timeout=1000)
 def _update_graph(
     year_range,
     outage_indicator,
@@ -440,7 +455,6 @@ def _update_graph(
                 hovertemplate="longitude: %{lon:.2f}<br>" + "latitude: %{lat:.2f}<br>",
             )
         )
-
         map_fig.add_trace(
             go.Scattermapbox(
                 lon=np.array(lon_x),
