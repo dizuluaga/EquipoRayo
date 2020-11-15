@@ -124,7 +124,7 @@ layout = html.Div(
                     ],
                 ),
                 dcc.Tab(label="2", value="tab-2"),
-            ],
+            ],persistence=True,
         ),
         html.Div(
             id="tabs-content-props",

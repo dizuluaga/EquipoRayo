@@ -41,18 +41,25 @@ alert = dbc.Alert(
             className="mb-0",
         ),
     ],
+    dismissable=True,
+    id="alerta-message",
+    is_open=True,
+    color='danger'
 )
 
 
-cards_alerta = [dbc.Row(
-    dbc.Card(
-        [
-            html.H2(f"{0.85*100:.1f}%", className="card-title"),
-            html.P("Model Training Accuracy", className="card-text"),
-        ],
-        body=True,
-        color="light",)
+cards_alerta = [
+    dbc.Row(
+        dbc.Card(
+            [
+                html.H2(f"{0.85*100:.1f}%", className="card-title"),
+                html.P("Model Training Accuracy", className="card-text"),
+            ],
+            body=True,
+            color="danger",
+        )
     ),
+    html.Br(),
     # dbc.Card(
     #     [
     #         html.H2(f"{0.75*100:.1f}%", className="card-title"),
@@ -63,15 +70,16 @@ cards_alerta = [dbc.Row(
     #     inverse=True,
     # ),
     dbc.Row(
-    dbc.Card(
-        [
-            html.H2("50 / 60", className="card-title"),
-            html.P("Train / Test Split", className="card-text"),
-        ],
-        body=True,
-        color="primary",
-        inverse=True,
-    ),)
+        dbc.Card(
+            [
+                html.H2("50 / 60", className="card-title"),
+                html.P("Train / Test Split", className="card-text"),
+            ],
+            body=True,
+            color="primary",
+            inverse=True,
+        ),
+    ),
 ]
 
 
@@ -79,17 +87,39 @@ layout = dbc.Container(
     [
         dcc.Interval(id="interval-component"),
         html.H1("Real time prediction"),
-        html.Hr(),
         alert,
-        html.Hr(),
         dbc.Row(
             [
                 dbc.Col(dcc.Graph(id="cluster-graph"), md=8),
+                dbc.Col(html.Div(cards_alerta), md=2),
                 dbc.Col(
-                    html.Div(cards_alerta), md=4),
+            dcc.Input(
+                id="camilo",
+                type="number",
+                placeholder="input with range",
+                min=10,
+                max=100,
+                step=3,)
+            )
             ],
             align="center",
         ),
     ],
-    fluid=True,
+    fluid=True
 )
+
+
+@app.callback(
+    Output("alerta-message", "color"),
+    [
+        Input("camilo", "value"),
+    ],
+)
+def change_style(value):
+    print(value)
+    if value>50:
+        return "primary"
+    else:
+        return "danger"
+    
+    
