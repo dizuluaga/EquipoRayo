@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-
+from  lib import realtime
 # Recall app
 import data.data_import_DB_L2
 
@@ -131,85 +131,70 @@ layout = html.Div(
             children=html.Div(
                 id="mini-layout",
                 children=[
-                    dcc.Loading(
-                        dcc.Graph(id="fig-clusters", config={"displayModeBar": False})
-                    )
                 ],
             ),
-        ),
-        dash_table.DataTable(
-            id="datatable-features",
-            # data=df.to_dict("records"),  # the contents of the table
-            editable=False,  # allow editing of data inside all cells
-            fixed_rows={'headers': True},
-            filter_action="none",  # allow filtering of data by user ('native') or not ('none')
-            sort_action="none",  # enables data to be sorted per-column by user or not ('none')
-            sort_mode="multi",  # sort across 'multi' or 'single' columns
-            sort_by=[{'column_id':'label', 'direction':'desc'}],
-            # column_selectable="multi",  # allow users to select 'multi' or 'single' columns
-            # row_selectable="multi",  # allow users to select 'multi' or 'single' rows
-            row_deletable=False,  # choose if user can delete a row (True) or not (False)
-            selected_columns=[],  # ids of columns that user selects
-            selected_rows=[],  # indices of rows that user selects
-            page_action="native",  # all data is passed to the table up-front or not ('none')
-            page_current=0,  # page number that user is on
-            page_size=20,  # number of rows visible per page
-            style_cell={  # ensure adequate header width when text is shorter than cell's text
-                "minWidth": 95,
-                "maxWidth": 95,
-                "width": 95,
-                "font-family": "sans-serif",
-                "textAlign": "center",
-            },
-            style_cell_conditional=[  # align text columns to left. By default they are aligned to right
-                {"if": {"column_id": c}, "textAlign": "left"}
-                for c in ["country", "iso_alpha3"]
-            ],
-            style_data={  # overflow cells' content into multiple lines
-                "whiteSpace": "normal",
-                "height": "auto",
-            },
-            style_as_list_view=True,
-            style_header={
-                "backgroundColor": "rgb(230, 230, 230)",
-                "fontWeight": "bold",
-            },
-            style_table={
-                "maxHeight": "50ex",
-                "overflowY": "scroll",
-                "width": "100%",
-                "minWidth": "100%",
-            }
-            # TODO Agregar en rojo si la prob es mayor al threhold
-            # style_data_conditional=[
-            #     {
-            #         "if": {
-            #             "filter_query": "{Humidity} > 19 && {Humidity} < 41",
-            #             "column_id": "Humidity",
-            #         },
-            #         "color": "tomato",
-            #         "fontWeight": "bold",
-            #     },
-            # ],
-        ),
-    ],
-    className="ds4a-graphs",
-)
+)],className="ds4a-graphs",)
 
+train_layout = html.Div([dcc.Loading(
+                        dcc.Graph(id="fig-clusters", config={"displayModeBar": False})),
+                         dash_table.DataTable(
+                        id="datatable-features",
+                        # data=df.to_dict("records"),  # the contents of the table
+                        editable=False,  # allow editing of data inside all cells
+                        fixed_rows={'headers': True},
+                        filter_action="none",  # allow filtering of data by user ('native') or not ('none')
+                        sort_action="none",  # enables data to be sorted per-column by user or not ('none')
+                        sort_mode="multi",  # sort across 'multi' or 'single' columns
+                        sort_by=[{'column_id':'label', 'direction':'desc'}],
+                        # column_selectable="multi",  # allow users to select 'multi' or 'single' columns
+                        # row_selectable="multi",  # allow users to select 'multi' or 'single' rows
+                        row_deletable=False,  # choose if user can delete a row (True) or not (False)
+                        selected_columns=[],  # ids of columns that user selects
+                        selected_rows=[],  # indices of rows that user selects
+                        page_action="native",  # all data is passed to the table up-front or not ('none')
+                        page_current=0,  # page number that user is on
+                        page_size=20,  # number of rows visible per page
+                        style_cell={  # ensure adequate header width when text is shorter than cell's text
+                            "minWidth": 95,
+                            "maxWidth": 95,
+                            "width": 95,
+                            "font-family": "sans-serif",
+                            "textAlign": "center",
+                        },
+                        style_cell_conditional=[  # align text columns to left. By default they are aligned to right
+                            {"if": {"column_id": c}, "textAlign": "left"}
+                            for c in ["country", "iso_alpha3"]
+                        ],
+                        style_data={  # overflow cells' content into multiple lines
+                            "whiteSpace": "normal",
+                            "height": "auto",
+                        },
+                        style_as_list_view=True,
+                        style_header={
+                            "backgroundColor": "rgb(230, 230, 230)",
+                            "fontWeight": "bold",
+                        },
+                        style_table={
+                            "maxHeight": "50ex",
+                            "overflowY": "scroll",
+                            "width": "100%",
+                            "minWidth": "100%",
+                        }
+                    )])
+                        
 
 @app.callback(
     Output("tabs-content-props", "children"),
     [Input("tabs-styled-with-props", "value")],
 )
+@cache.memoize(timeout=1500)
 def render_content(tab):
     print(tab)
     if tab == "tab-1":
-        global mini_layout
-        layout = mini_layout
-        return layout
-    elif tab == "tab-2":
-        fig = px.scatter(x=[0, 1, 2, 3, 4], y=[0, 1, 4, 9, 16])
-        mini_layout2 = html.Div(id="tabs-cont", children=[dcc.Graph(figure=fig)])
+        # global mini_layout
+        return train_layout
+    if tab == "tab-2":
+        mini_layout2 = realtime.layout
         return mini_layout2
 
 
@@ -224,7 +209,7 @@ def render_content(tab):
         Input("memory-features-model", "data"),
     ],
 )
-# @cache.memoize(timeout=1000)
+@cache.memoize(timeout=1000)
 def updating(power_line_name_model, outage_indicatoes, data_towers, data_clusters, data_features):
     towers = pd.DataFrame.from_dict(data_towers)
     df_clusters = pd.DataFrame.from_dict(data_clusters)
@@ -333,4 +318,3 @@ def updating(power_line_name_model, outage_indicatoes, data_towers, data_cluster
     ]
     
     return map_fig, df_numeric.to_dict('records'), cols, style_data_conditional
-
