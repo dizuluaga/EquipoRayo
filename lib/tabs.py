@@ -55,7 +55,8 @@ cards = [
             html.P("True Negatives Rate", className="card-text"),
         ],
         body=True,
-        color="light",
+        color="dark",
+        inverse=True,
     ),
     dbc.Card(
         [
@@ -91,9 +92,9 @@ layout = html.Div(
             value="tab-1",
             children=[
                 dcc.Tab(
-                    label="Clusters",
+                    label="Historical prediction",
                     value="tab-1",
-                    children=[
+                    children=[html.H1("Historical prediction"),
                         html.Hr(),
                         dbc.Row([dbc.Col(card) for card in cards]),
                         html.Label(
@@ -123,7 +124,7 @@ layout = html.Div(
                         ),
                     ],
                 ),
-                dcc.Tab(label="2", value="tab-2"),
+                dcc.Tab(label="Real time prediction", value="tab-2"),
             ],persistence=True,
         ),
         html.Div(

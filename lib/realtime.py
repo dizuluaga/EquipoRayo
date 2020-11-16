@@ -30,15 +30,13 @@ from lib.stats import mapstyle
 
 alert = dbc.Alert(
     [
-        html.H4("Well done!", className="alert-heading"),
+        html.H4("WARNING: Failure alert!", className="alert-heading"),
         html.P(
-            "This is a success alert with loads of extra text in it. So much "
-            "that you can see how spacing within an alert works with this "
-            "kind of content."
+            "It is likely that in the next 5 minutes there will be a failure in the Comuneros-Primavera power line."
         ),
         html.Hr(),
         html.P(
-            "Let's put some more text down here, but remove the bottom margin",
+            "The probability must be higher than 30% for the cluster to be considered as a potential cause of failure.",
             className="mb-0",
         ),
     ],
@@ -53,35 +51,72 @@ cards_alerta = [
     dbc.Row(
         dbc.Card(
             [
-                html.H2(id = 'card-probability', className="card-title"),
+                html.H2(id="card-probability", className="card-title"),
                 html.P("Probability of outage", className="card-text"),
-            ],id='card-block',
+            ],
+            id="card-block",
             body=True,
             color="danger",
         )
     ),
     html.Br(),
-    # dbc.Card(
-    #     [
-    #         html.H2(f"{0.75*100:.1f}%", className="card-title"),
-    #         html.P("Model Test Accuracy", className="card-text"),
-    #     ],
-    #     body=True,
-    #     color="dark",
-    #     inverse=True,
-    # ),
     dbc.Row(
         dbc.Card(
             [
-                html.H2(className="card-title", id='hora'),
-                html.P("Time H-M-S", className="card-text"),
+                html.H2(className="card-title", id="hora"),
+                html.P("Time HH:MM:SS", className="card-text"),
             ],
             body=True,
-            color="primary",
+            color="dark",
             inverse=True,
         ),
     ),
 ]
+
+
+tabla_prediction = dash_table.DataTable(
+    id="datatable-prediction",
+    # data=df.to_dict("records"),  # the contents of the table
+    editable=False,  # allow editing of data inside all cells
+    fixed_rows={"headers": True},
+    filter_action="none",  # allow filtering of data by user ('native') or not ('none')
+    sort_action="none",  # enables data to be sorted per-column by user or not ('none')
+    sort_mode="multi",  # sort across 'multi' or 'single' columns
+    sort_by=[{"column_id": "label", "direction": "desc"}],
+    # column_selectable="multi",  # allow users to select 'multi' or 'single' columns
+    # row_selectable="multi",  # allow users to select 'multi' or 'single' rows
+    row_deletable=False,  # choose if user can delete a row (True) or not (False)
+    selected_columns=[],  # ids of columns that user selects
+    selected_rows=[],  # indices of rows that user selects
+    page_action="native",  # all data is passed to the table up-front or not ('none')
+    page_current=0,  # page number that user is on
+    page_size=20,  # number of rows visible per page
+    style_cell={  # ensure adequate header width when text is shorter than cell's text
+        "minWidth": "180px",
+        "width": "180px",
+        "maxWidth": "180px",
+        "font-family": "sans-serif",
+        "textAlign": "center",
+    },
+    style_cell_conditional=[  # align text columns to left. By default they are aligned to right
+        {"if": {"column_id": c}, "textAlign": "left"} for c in ["country", "iso_alpha3"]
+    ],
+    style_data={  # overflow cells' content into multiple lines
+        "whiteSpace": "normal",
+        "height": "auto",
+    },
+    style_as_list_view=True,
+    style_header={
+        "backgroundColor": "rgb(230, 230, 230)",
+        "fontWeight": "bold",
+    },
+    style_table={
+        "maxHeight": "50ex",
+        "overflowY": "scroll",
+        "width": "100%",
+        "minWidth": "100%",
+    },
+)
 
 
 layout = dbc.Container(
@@ -101,21 +136,11 @@ layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(dcc.Graph(id="cluster-realtime-graph"), md=8),
-                dbc.Col(html.Div(cards_alerta), md=2),
-                dbc.Col(
-                    dcc.Input(
-                        id="camilo",
-                        type="number",
-                        placeholder="input with range",
-                        min=10,
-                        max=100,
-                        step=3,
-                    )
-                ),
+                dbc.Col(html.Div(cards_alerta), md=4),
             ],
             align="center",
         ),
+        tabla_prediction,
     ],
     fluid=True,
 )
-

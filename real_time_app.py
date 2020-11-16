@@ -39,7 +39,9 @@ from lib.stats import mapstyle
 import lib.buffer as buffer
 
 # ******* change ************************
-df_towers = pd.read_csv(Path(r"./data/towers1.csv"), header=0, delimiter=",", index_col=0)
+df_towers = pd.read_csv(
+    Path(r"./data/towers1.csv"), header=0, delimiter=",", index_col=0
+)
 # ****************************************
 
 # ST-DBSCAN
@@ -49,7 +51,9 @@ x_buffer, y_buffer, buffer_dist = buffer.buffer_line(
     distance=30, towers_buffer=df_towers
 )
 discharges_gdf = features.convertir_gdf(discharges_df)
-discharges_df = discharges_gdf.loc[discharges_gdf.within(buffer_dist.geometry.iloc[0])]
+discharges_df = discharges_gdf.loc[
+    discharges_gdf.within(buffer_dist.geometry.iloc[0])
+].copy()
 
 # model parameters
 eps1_km = 10  # spatial distance of 10 km
@@ -94,7 +98,9 @@ filter_prediction_df = svm_predictor.filter_predictions(prediction_df=prediction
 print("MAXIMO", filter_prediction_df.prediction.max())
 
 clusters_id_final = filter_prediction_df.index
-discharges_by_cluster_df_temp = discharges_by_cluster_df[discharges_by_cluster_df.cluster.isin(clusters_id_final)]
+discharges_by_cluster_df_temp = discharges_by_cluster_df[
+    discharges_by_cluster_df.cluster.isin(clusters_id_final)
+]
 
 
 def get_realtime_figure(
@@ -150,6 +156,9 @@ figure = get_realtime_figure()
         Output("cluster-realtime-graph", "figure"),
         Output("hora", "children"),
         Output("card-probability", "children"),
+        Output("datatable-prediction", "data"),
+        Output("datatable-prediction", "columns"),
+        Output('datatable-prediction', 'style_data_conditional')
     ],
     [
         Input("real-time-interval", "n_intervals"),
@@ -160,8 +169,54 @@ def update_graph(num):
     if num == 0:
         raise PreventUpdate
     else:
+        df_table = filter_prediction_df.copy()
+        formato = Format(
+            scheme=Scheme.fixed,
+            precision=2,
+            group=Group.yes,
+            groups=3,
+            group_delimiter=".",
+            decimal_delimiter=",",
+        )
+
+        formato_int = Format(
+            scheme=Scheme.fixed,
+            precision=0,
+            group=Group.yes,
+            groups=3,
+            group_delimiter=".",
+            decimal_delimiter=",",
+        )
+        df_table.index.name='Cluster'
+        df_table.reset_index(inplace=True)
+        # cols = df_table.columns.drop("date_outage")
+        cols = df_table.columns
+        df_table[cols] = df_table[cols].apply(pd.to_numeric)
+        df_numeric = df_table.select_dtypes(exclude=["object"])
+        df_numeric.sort_values("Cluster", ascending=True, inplace=True)
+        df_numeric.columns = df_numeric.columns.map(lambda x: x.replace("_", " "))
+        cols = [
+            {
+                "name": i,
+                "id": i,
+                "type": "numeric",
+                "format": formato_int if i in ["Cluster", "label", "line"] else formato,
+            }
+            for i in df_numeric.columns
+        ]
+        style_data_conditional = [
+            {
+                "if": {"filter_query": "{label} = 1"},
+                "backgroundColor": "#FF4136",
+                "color": "white",
+                "fontWeight": "bold",
+            },
+        ]
         return (
             figure,
-            dt.now().strftime("%H-%M-%S.%f")[:-4],
+            dt.now().strftime("%H:%M:%S.%f")[:-4],
             "{:.1f}%".format(filter_prediction_df.prediction.max() * 100),
+            df_numeric.to_dict("records"),
+            cols,
+            style_data_conditional
         )
