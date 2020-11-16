@@ -1,8 +1,8 @@
-# Dashboard for ISA project
+# Final Project - Data Science For All 3.0
 
-## Integrants:
+# Members:
 * Diana Zuluaga
-* Camilo Gutierrez
+* Camilo Gutiérrez
 * Wbeimar Ossa
 * Edison Yepes
-* Julian Arango 
+* Julián Arango
