@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from pathlib import Path
 
 # Recall app
 import data.data_import_DB_L2
@@ -38,7 +39,7 @@ from lib.stats import mapstyle
 import lib.buffer as buffer
 
 # ******* change ************************
-df_towers = pd.read_csv(r".\data\towers1.csv", header=0, delimiter=",", index_col=0)
+df_towers = pd.read_csv(Path(r"./data/towers1.csv"), header=0, delimiter=",", index_col=0)
 # ****************************************
 
 # ST-DBSCAN
