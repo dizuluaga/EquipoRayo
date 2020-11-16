@@ -4,6 +4,8 @@ from dash.dependencies import Input, Output, State
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_table
+from datetime import timedelta
+from datetime import datetime, time
 
 import pandas as pd
 import plotly.express as px
@@ -182,3 +184,23 @@ def filter_features(power_line_name, outage_indicator, data_outages):
             engine,
         )
     return features_df.to_dict("records"), df_clusters.to_dict("records")
+
+def discharges_last_5hours(current_date=datetime(2019,11,11), table_id=1):
+    # current_time = datetime.now().time()
+    current_time = time(2,18,0)
+    print(current_time)
+    current_datetime = datetime.combine(current_date, current_time)
+    discharges_5hours_df = pd.read_sql_query(
+        f"""SELECT * FROM tbl_discharges_{table_id}
+        WHERE date BETWEEN ('{current_datetime}'::timestamp - '24 hours'::interval)
+        AND ('{current_datetime}'::timestamp)""",
+        engine,
+    )
+    discharges_5hours_df[['longitude','latitude','polarity','magnitude','current','line']] = discharges_5hours_df[['longitude'
+                                                                                                                ,'latitude'
+                                                                                                                ,'polarity'
+                                                                                                                ,'magnitude'
+                                                                                                                ,'current'
+                                                                                                                ,'line']].apply(pd.to_numeric)
+    discharges_5hours_df.drop(columns=['id_discharges'], inplace=True)
+    return discharges_5hours_df, current_datetime

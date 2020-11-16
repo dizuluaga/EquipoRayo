@@ -94,7 +94,7 @@ card_wbeimar = dbc.Card(
 
 card_edison = dbc.Card(
     [
-        dbc.CardImg(src="/assets/wbeimar.jpeg", top=True),
+        dbc.CardImg(src="/assets/edison.jpeg", top=True),
         dbc.CardBody(
             [
                 html.H5("Edison Yepes", className="card-title"),
@@ -105,7 +105,7 @@ card_edison = dbc.Card(
                 dbc.Button(
                     "Contact me",
                     className="mr-1",
-                    href="https://www.linkedin.com/in/wbeimarossa",
+                    href="https://www.linkedin.com/in/edison-yepes/",
                     target="_blank",
                 ),
             ]

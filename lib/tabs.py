@@ -51,16 +51,16 @@ lineas_dict_numbers = {
 cards = [
     dbc.Card(
         [
-            html.H2(f"{0.85*100:.1f}%", className="card-title"),
-            html.P("Model Training Accuracy", className="card-text"),
+            html.H2(f"{0.93*100}%", className="card-title"),
+            html.P("True Negatives Rate", className="card-text"),
         ],
         body=True,
         color="light",
     ),
     dbc.Card(
         [
-            html.H2(f"{0.75*100:.1f}%", className="card-title"),
-            html.P("Model Test Accuracy", className="card-text"),
+            html.H2(f"{0.80*100}%", className="card-title"),
+            html.P("True Positives Rate", className="card-text"),
         ],
         body=True,
         color="dark",
@@ -68,8 +68,8 @@ cards = [
     ),
     dbc.Card(
         [
-            html.H2("50 / 60", className="card-title"),
-            html.P("Train / Test Split", className="card-text"),
+            html.H2(f"{0.3*100}%", className="card-title"),
+            html.P("Prediction Threshold", className="card-text"),
         ],
         body=True,
         color="primary",
@@ -155,9 +155,7 @@ train_layout = html.Div([dcc.Loading(
                         page_current=0,  # page number that user is on
                         page_size=20,  # number of rows visible per page
                         style_cell={  # ensure adequate header width when text is shorter than cell's text
-                            "minWidth": 95,
-                            "maxWidth": 95,
-                            "width": 95,
+                             'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
                             "font-family": "sans-serif",
                             "textAlign": "center",
                         },
@@ -187,7 +185,7 @@ train_layout = html.Div([dcc.Loading(
     Output("tabs-content-props", "children"),
     [Input("tabs-styled-with-props", "value")],
 )
-@cache.memoize(timeout=1500)
+@cache.memoize(timeout=60)
 def render_content(tab):
     print(tab)
     if tab == "tab-1":
@@ -209,7 +207,7 @@ def render_content(tab):
         Input("memory-features-model", "data"),
     ],
 )
-@cache.memoize(timeout=1000)
+@cache.memoize(timeout=60)
 def updating(power_line_name_model, outage_indicatoes, data_towers, data_clusters, data_features):
     towers = pd.DataFrame.from_dict(data_towers)
     df_clusters = pd.DataFrame.from_dict(data_clusters)

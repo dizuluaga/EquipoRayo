@@ -15,6 +15,7 @@ import plotly.graph_objects as go
 
 # Recall app
 import data.data_import_DB_L2
+from real_time_app import discharges_by_cluster_df
 
 from app import app
 from dash.dependencies import ClientsideFunction, Input, Output, State
@@ -44,7 +45,7 @@ alert = dbc.Alert(
     dismissable=True,
     id="alerta-message",
     is_open=True,
-    color='danger'
+    color="danger",
 )
 
 
@@ -52,9 +53,9 @@ cards_alerta = [
     dbc.Row(
         dbc.Card(
             [
-                html.H2(f"{0.85*100:.1f}%", className="card-title"),
-                html.P("Model Training Accuracy", className="card-text"),
-            ],
+                html.H2(id = 'card-probability', className="card-title"),
+                html.P("Probability of outage", className="card-text"),
+            ],id='card-block',
             body=True,
             color="danger",
         )
@@ -72,8 +73,8 @@ cards_alerta = [
     dbc.Row(
         dbc.Card(
             [
-                html.H2("50 / 60", className="card-title"),
-                html.P("Train / Test Split", className="card-text"),
+                html.H2(className="card-title", id='hora'),
+                html.P("Time H-M-S", className="card-text"),
             ],
             body=True,
             color="primary",
@@ -85,41 +86,36 @@ cards_alerta = [
 
 layout = dbc.Container(
     [
-        dcc.Interval(id="interval-component"),
+        dcc.Interval(
+            id="real-time-interval",
+            disabled=False,  # if True, the counter will no longer update
+            interval=1
+            * 1000,  # increment the counter n_intervals every interval milliseconds
+            # n_intervals=0,  # number of times the interval has passed
+            # max_intervals=4,  # number of times the interval will be fired.
+            # if -1, then the interval has no limit (the default)
+            # and if 0 then the interval stops running.
+        ),
         html.H1("Real time prediction"),
         alert,
         dbc.Row(
             [
-                dbc.Col(dcc.Graph(id="cluster-graph"), md=8),
+                dbc.Col(dcc.Graph(id="cluster-realtime-graph"), md=8),
                 dbc.Col(html.Div(cards_alerta), md=2),
                 dbc.Col(
-            dcc.Input(
-                id="camilo",
-                type="number",
-                placeholder="input with range",
-                min=10,
-                max=100,
-                step=3,)
-            )
+                    dcc.Input(
+                        id="camilo",
+                        type="number",
+                        placeholder="input with range",
+                        min=10,
+                        max=100,
+                        step=3,
+                    )
+                ),
             ],
             align="center",
         ),
     ],
-    fluid=True
+    fluid=True,
 )
 
-
-@app.callback(
-    Output("alerta-message", "color"),
-    [
-        Input("camilo", "value"),
-    ],
-)
-def change_style(value):
-    print(value)
-    if value>50:
-        return "primary"
-    else:
-        return "danger"
-    
-    

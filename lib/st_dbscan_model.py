@@ -5,7 +5,6 @@ from st_dbscan import ST_DBSCAN
 
 # prepares data to be enter to the ST-DBSCAN algorithm
 def data_preparation(discharges_df, current_datetime):
-    print(discharges_df)
     discharges_df['current_datetime'] = current_datetime
     discharges_df['time_delta'] = (current_datetime - discharges_df['date']).dt.total_seconds()/60
     discharges_df['longitude_rad'] = discharges_df.apply(lambda row: np.radians(row['longitude']), axis=1)
