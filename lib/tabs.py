@@ -286,8 +286,6 @@ def updating(power_line_name_model, outage_indicatoes, data_towers, data_cluster
                 group_delimiter='.',
                 decimal_delimiter=',')
     
-    df_clusters.to_excel('df_clustrs.xlsx')
-    df_features.to_excel('df_features.xlsx')
     df_features.index = pd.to_numeric(df_features.index)
     df_features.index.name = 'Cluster'
     df_table = df_features.join(df_clusters.drop_duplicates('cluster').set_index('cluster')[['date_outage']]).dropna()
