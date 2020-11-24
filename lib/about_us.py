@@ -118,16 +118,16 @@ layout = html.Div(
     [
         dbc.Row(
             [
-                dbc.Col(card_camilo, width=3),
-                dbc.Col(card_diana, width=3),
-                dbc.Col(card_wbeimar, width=3),
+                dbc.Col(card_camilo, xl=3, width = 9, align='start'),
+                dbc.Col(card_diana, xl=3, width = 9,align='start'),
+                dbc.Col(card_wbeimar, xl=3, width = 9,align='start'),
             ],
             justify="center",
         ),
         dbc.Row(
             [
-                dbc.Col(card_julian, width=3),
-                dbc.Col(card_edison, width=3),
+                dbc.Col(card_julian, xl=3, width = 9,align='center'),
+                dbc.Col(card_edison, xl=3, width = 9,align='center'),
             ],
             justify="center",style={'margin-top':'30px'}
         )
