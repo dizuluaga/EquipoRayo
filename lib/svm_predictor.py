@@ -33,7 +33,9 @@ def create_prediction_df(clean_features_df, prediction, threshold):
     return prediction_df
 
 def filter_predictions(prediction_df):
+
     filter_prediction_df = prediction_df[prediction_df.time_delta_min<=60]
+    
     return filter_prediction_df
     #prediction_df['cluster'] = prediction_df.index
     #discharges_by_cluster_predic_df = discharges_by_cluster_df.merge(prediction_df, how= ,on='cluster')

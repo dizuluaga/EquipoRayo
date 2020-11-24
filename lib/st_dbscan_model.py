@@ -14,9 +14,6 @@ def data_preparation(discharges_df, current_datetime):
 
     return data_array
 
-
-#data_preparation
-
 # ST-DBSCAN algorithm
 def st_dbscan(eps1, eps2, min_samples, data_array):
 

@@ -1,9 +1,5 @@
-import os
 import geopandas as gpd
-import matplotlib.pyplot as plt
 import pandas as pd
-from sqlalchemy import create_engine
-
 
 def convertir_gdf(df, crs='EPSG:4326'):
     gdf  = gpd.GeoDataFrame(
@@ -15,8 +11,50 @@ def convertir_gdf(df, crs='EPSG:4326'):
     gdf.to_crs('EPSG:3116')
     return gdf
 
-
 def extract_features(df_discharges, df_towers):
+
+    groups = df_discharges.groupby('cluster')
+
+    # primary features
+    storm_duration = groups['time_delta'].pipe(lambda x: x.max() - x.min())
+    temporal_density = groups['date'].count() / storm_duration
+    time_delta_min = groups['time_delta'].min()
+    magnitude_mean = groups['magnitude'].mean()
+    magnitude_max = groups['magnitude'].max()
+
+    # geopandas operations
+    gdf_discharges = convertir_gdf(df_discharges)
+    auxi = gdf_discharges.dissolve('cluster').convex_hull
+    auxi_proj = gdf_discharges.dissolve('cluster').to_crs('EPSG:3116')
+    towers_projected = df_towers.pipe(convertir_gdf).to_crs('EPSG:3116')
+    poly = auxi.to_crs('EPSG:3116')
+    #poli = gpd.GeoDataFrame(geometry=[auxi], crs='EPSG:4326').to_crs('EPSG:3116')
+
+    # secondary features
+    area = poly.area/1000000
+    spatial_density = groups['date'].count() / area
+    distance_centroid = poly.centroid.distance(towers_projected.unary_union)/1000
+    distance_polygon = poly.distance(towers_projected.unary_union)/1000
+    distance_max = auxi_proj.distance(towers_projected.unary_union)/1000 #change
+
+    raw_features_df = pd.DataFrame(data={'storm_duration':storm_duration, 'temporal_density':temporal_density
+                                        ,'time_delta_min':time_delta_min
+                                        ,'magnitude_mean':magnitude_mean, 'magnitude_max':magnitude_max
+                                        ,'area':area, 'spatial_density':spatial_density
+                                        ,'distance_centroid':distance_centroid, 'distance_polygon':distance_polygon
+                                        ,'distance_max':distance_max
+                                        ,'cluster':storm_duration.index}
+                                    ,index=storm_duration.index)
+
+    clean_features_df = raw_features_df[(raw_features_df.cluster > -1)
+                                        & (raw_features_df.area > 0)
+                                        & (raw_features_df.storm_duration > 0)]
+    
+    clean_features_df.drop(columns=['cluster'], inplace=True)
+
+    return clean_features_df
+
+def extract_features_ori(df_discharges, df_towers):
 
     groups = df_discharges.groupby('cluster')
 
@@ -51,8 +89,10 @@ def extract_features(df_discharges, df_towers):
         magnitude_max = group['magnitude'].max()
         magnitudes_max.append(magnitude_max)
 
-        auxi = group.pipe(convertir_gdf, crs='EPSG:4326').unary_union.convex_hull
-        auxi_proj = group.pipe(convertir_gdf, crs='EPSG:4326').to_crs('EPSG:3116')
+        group_gdf = group.pipe(convertir_gdf, crs='EPSG:4326')
+        auxi = group_gdf.unary_union.convex_hull
+        auxi_proj = group_gdf.to_crs('EPSG:3116')
+        #auxi_proj = group_gdf # new
         towers_projected = df_towers.pipe(convertir_gdf).to_crs('EPSG:3116')
         poli = gpd.GeoDataFrame(geometry=[auxi], crs='EPSG:4326').to_crs('EPSG:3116')
 
@@ -72,27 +112,34 @@ def extract_features(df_discharges, df_towers):
         distances_max.append(distance_max)
 
     raw_features_df = pd.DataFrame(data={'storm_duration':storm_durations, 'temporal_density':temporal_densities
-                                ,'time_delta_min':time_deltas_min
-                                ,'magnitude_mean':magnitudes_mean, 'magnitude_max':magnitudes_max
-                                ,'area':areas, 'spatial_density':spatial_densities
-                                ,'distance_centroid':distances_centroid, 'distance_polygon':distances_polygon
-                                ,'distance_max':distances_max
-                                ,'cluster':cluster_names}
-                    ,index=cluster_names
-                    )
-    return raw_features_df
+                                        ,'time_delta_min':time_deltas_min
+                                        ,'magnitude_mean':magnitudes_mean, 'magnitude_max':magnitudes_max
+                                        ,'area':areas, 'spatial_density':spatial_densities
+                                        ,'distance_centroid':distances_centroid, 'distance_polygon':distances_polygon
+                                        ,'distance_max':distances_max
+                                        ,'cluster':cluster_names}
+                                    ,index=cluster_names)
 
-def clean_features(raw_features_df):
-    clean_features_df = raw_features_df[raw_features_df.cluster > -1]
-    clean_features_df = clean_features_df[clean_features_df.area > 0]
-    clean_features_df = clean_features_df[clean_features_df.storm_duration > 0]
+    clean_features_df = raw_features_df[(raw_features_df.cluster > -1)
+                                        & (raw_features_df.area > 0)
+                                        & (raw_features_df.storm_duration > 0)]
+    #clean_features_df = clean_features_df[clean_features_df.area > 0]
+    #clean_features_df = clean_features_df[clean_features_df.storm_duration > 0]
     clean_features_df.drop(columns=['cluster'], inplace=True)
+ 
     return clean_features_df
+
+#def clean_features(raw_features_df):
+#    clean_features_df = raw_features_df[raw_features_df.cluster > -1]
+#    clean_features_df = clean_features_df[clean_features_df.area > 0]
+#    clean_features_df = clean_features_df[clean_features_df.storm_duration > 0]
+#    clean_features_df.drop(columns=['cluster'], inplace=True)
+#    return clean_features_df
 
 
 #df_towers = pd.read_csv(r"C:\Users\USUARIO\Documents\ds4a\project\EquipoRayo\data_all_lines\towers1.csv", header=0
 #                        , delimiter=',', index_col=0)
-#df_discharges = pd.read_csv(r"C:\Users\USUARIO\Documents\ds4a\project\EquipoRayo\data_all_lines\discharges_by_cluster.csv"
+#df_discharges = pd.read_csv(r"C:\Users\USUARIO\Desktop\backup EquipoRayo\data\data_all_lines\discharges_by_cluster.csv"
 #                            ,header=0, delimiter=',', index_col=0)
 #df_discharges = df_discharges[df_discharges.line==1]
 

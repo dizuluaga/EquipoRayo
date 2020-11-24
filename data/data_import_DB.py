@@ -77,6 +77,9 @@ lineas_dict_numbers = {
     "virginia": 3,
 }
 
+towers_1 = pd.read_sql_table('tbl_towers_1', engine)
+towers_2 = pd.read_sql_table('tbl_towers_2', engine)
+towers_3 = pd.read_sql_table('tbl_towers_3', engine)
 
 def get_discharges(date_first="2018-04-05", num_days=1, table_id=1):
     df = pd.read_sql_query(
@@ -111,10 +114,10 @@ def filter_outages(power_line_name):
     ],
 )
 @cache.memoize(timeout=60)
-def filter_towers(power_line_name):
+def filter_towers(power_line_name, towers): # change
     table_id = lineas_dict_numbers[power_line_name]
-    towers = pd.read_sql_table(f"tbl_towers_{table_id}", engine)
-    return (towers.to_dict("records"),)
+    towers = all_towers[all_towers.line==table_id]
+    return (tower.to_dict("records"),)
 
 
 @app.callback(
