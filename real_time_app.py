@@ -39,9 +39,6 @@ import lib.buffer as buffer
 from timeit import default_timer as timer
 
 start_abs = timer()
-# ******* change ************************
-#df_towers = pd.read_csv(Path(r"./data/towers1.csv"), header=0, delimiter=",", index_col=0)
-# ****************************************
 
 ## INITIALIZATION
 
@@ -116,13 +113,10 @@ for line in range(1,4):
                                                     ,pkl_filename=pkl_filename
                                                     ,clean_features_df=clean_features_df)
 
-            # create dataframe from prediction output
-            prediction_df = svm_predictor.create_prediction_df(clean_features_df=clean_features_df
+            # create and filter dataframe from prediction output
+            filter_prediction_df = svm_predictor.create_prediction_df(clean_features_df=clean_features_df
                                                             ,prediction=prediction
                                                             ,threshold=0.3)
-
-            # filter clusters to be shown
-            filter_prediction_df = svm_predictor.filter_predictions(prediction_df=prediction_df)
 
             end = timer()
             print('prediction line {}: {}'.format(line, end-start))
@@ -135,7 +129,7 @@ for line in range(1,4):
 end_abs = timer()
 print('Total: {}'.format(end_abs - start_abs))
 
-#def get_realtime_figure(df_clusters=discharges_by_cluster_df_temp
+def get_realtime_figure(df_clusters=discharges_by_cluster_df_temp
 #                        ,towers=towers_df
 #                        ,df_features=filter_prediction_df,
 #                        ):

@@ -129,20 +129,3 @@ def extract_features_ori(df_discharges, df_towers):
     clean_features_df.drop(columns=['cluster'], inplace=True)
  
     return clean_features_df
-
-#def clean_features(raw_features_df):
-#    clean_features_df = raw_features_df[raw_features_df.cluster > -1]
-#    clean_features_df = clean_features_df[clean_features_df.area > 0]
-#    clean_features_df = clean_features_df[clean_features_df.storm_duration > 0]
-#    clean_features_df.drop(columns=['cluster'], inplace=True)
-#    return clean_features_df
-
-
-#df_towers = pd.read_csv(r"C:\Users\USUARIO\Documents\ds4a\project\EquipoRayo\data_all_lines\towers1.csv", header=0
-#                        , delimiter=',', index_col=0)
-#df_discharges = pd.read_csv(r"C:\Users\USUARIO\Desktop\backup EquipoRayo\data\data_all_lines\discharges_by_cluster.csv"
-#                            ,header=0, delimiter=',', index_col=0)
-#df_discharges = df_discharges[df_discharges.line==1]
-
-#features_df = features(df_discharges=df_discharges, df_towers=df_towers)
-#print(features_df)
