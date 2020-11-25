@@ -406,7 +406,7 @@ def _update_graph(
         discharges_outage_1 = Discharges_before_outage_by_time(
             outage_date, min_end - min_start, min_start, discharges=discharges
         )
-        print(min_end, min_start)
+        print('Tower Stats', towers)
         discharges_outage_1.sort_values(polatiry_or_magnitude, inplace=True)
         discharges_outage_1 = gpd.GeoDataFrame(
             discharges_outage_1,

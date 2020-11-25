@@ -103,7 +103,7 @@ def filter_outages(power_line_name):
 def filter_towers(power_line_name):
     table_id = lineas_dict_numbers[power_line_name]
     towers = pd.read_sql_table(f"tbl_towers_{table_id}", engine)
-    return (towers.to_dict("records"),)
+    return towers.to_dict("records")
 
 
 @app.callback(

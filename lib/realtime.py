@@ -283,7 +283,7 @@ layout = dbc.Container(
                             dbc.Badge(
                                 [
                                     html.H2(className="card-title", id="hora"),
-                                    html.P("Time HH:MM:SS", className="card-text"),
+                                    html.P("Last Updated", className="card-text"),
                                 ],
                                 color="dark",
                                 style={"backgroundColor": "#494a4b"},
@@ -330,7 +330,7 @@ layout = dbc.Container(
             [
                 dbc.Col(
                     dbc.Collapse(
-                        dcc.Graph(id="cluster-realtime-graph"),
+                        dcc.Graph(id="cluster-realtime-graph",config={"displayModeBar": False},),
                         id="map-collapse",
                         is_open=False,
                     )

@@ -63,10 +63,11 @@ pkl_filename = "SVM_model.pkl"
 towers_dict = {1: di_db.towers_1, 2: di_db.towers_2, 3: di_db.towers_3}
 discharges_by_cluster_dict = {}
 filter_prediction_dict = {}
+mapping = {1:{}, 2:{}, 3:{}}
 
 
 def api():
-    cluster_count = 0
+    total_clusters = 0
     for line in range(1, 4):
 
         ## DATA COLLECTION AND FILTERING
@@ -109,13 +110,7 @@ def api():
                 discharges_by_cluster_df = st_dbscan_model.discharges_by_cluster(
                     data_array=data_array, labels=labels, discharges_df=discharges_df
                 )
-                # cluster count
-                total_clusters = discharges_by_cluster_df.cluster.max()
-                discharges_by_cluster_df["cluster"] = (
-                    discharges_by_cluster_df["cluster"] + cluster_count
-                )
-                cluster_count = cluster_count + total_clusters
-
+                
                 end = timer()
                 print("clustering line {}: {}".format(line, end - start))
 
@@ -142,12 +137,12 @@ def api():
                 )
 
                 # create and filter dataframe from prediction output
-                filter_prediction_dict[line] = svm_predictor.create_prediction_df(
+                filter_prediction_df = svm_predictor.create_prediction_df(
                     clean_features_df=clean_features_df,
                     prediction=prediction,
                     threshold=0.3,
                 )
-
+                filter_prediction_dict[line] = filter_prediction_df
                 end = timer()
                 print("prediction line {}: {}".format(line, end - start))
 
@@ -156,6 +151,13 @@ def api():
                 discharges_by_cluster_dict[line] = discharges_by_cluster_df[
                     discharges_by_cluster_df.cluster.isin(clusters_prediction_index)
                 ]
+                
+                for i,cluster_ori in enumerate(clusters_prediction_index):
+                    mapping[line][cluster_ori] = i+1+total_clusters
+                cluster_count = len(clusters_prediction_index)    
+                total_clusters += cluster_count
+                discharges_by_cluster_dict[line]['cluster'] = discharges_by_cluster_df.cluster.map(mapping[line])
+                filter_prediction_dict[line]['cluster'] = filter_prediction_df.index.map(mapping[line])
 
     return discharges_by_cluster_dict, filter_prediction_dict
 
@@ -191,8 +193,9 @@ def get_realtime_figure(lista_lineas=[1, 2, 3]):
         #     color="cluster",
         #     hover_data=["time_delta", "date"],
         # )
-        print({linea:len(df_clusters.cluster.unique())})
-        print({linea:filter_prediction_dict[linea]})
+        # print({linea:len(df_clusters.cluster.unique())})
+        # print({linea:df_clusters.head()})
+        # print({linea:filter_prediction_dict[linea]})
         # for i in range(len(df_clusters.cluster.unique())):
         #     map_fig.add_trace(px.scatter_mapbox(
         #     df_clusters,
@@ -208,6 +211,19 @@ def get_realtime_figure(lista_lineas=[1, 2, 3]):
                 marker = go.scattermapbox.Marker(
                     size=7, color = df_clusters["cluster"], opacity=0.7
                 ),
+                legendgroup=str(linea),
+                name = 'Linea_'+str(linea),
+                customdata=pd.concat(
+                            [   df_clusters.cluster,
+                                df_clusters.date.dt.strftime("%H:%M:%S"),
+                                df_clusters.time_delta,
+                                df_clusters.magnitude,
+                                df_clusters.polarity,
+                                df_clusters.current,
+                            ],
+                            axis=1,
+                        ).values,
+                hovertemplate="<b>Cluster: %{customdata[0]}</b><br><b>Time: %{customdata[1]}</b><br><br>Time delta (min): %{customdata[2]:.1f}</b><br>Magnitude: %{customdata[3]:.1f}</b><br>Polarity: %{customdata[4]:.0f}",
             )
         )
 
@@ -219,13 +235,11 @@ def get_realtime_figure(lista_lineas=[1, 2, 3]):
                 mode="markers",  # markers+lines
                 marker=go.scattermapbox.Marker(size=7, color="black", opacity=0.7),
                 name="Towers",
+                showlegend=False,
                 hovertemplate="longitude: %{lon:.2f}<br>" + "latitude: %{lat:.2f}<br>",
+                legendgroup=str(linea)
             )
         )
-    # lon_x, lon_y, gdf_buffer = buf.buffer_line(10, towers_buffer=towers_)
-    # centro = gdf_buffer.centroid
-    # x = centro.x.iloc[0]
-    # y = centro.y.iloc[0]
     map_fig.update_layout(
         margin={"t": 0.2, "l": 0, "b": 10},
         autosize=True,
@@ -234,7 +248,7 @@ def get_realtime_figure(lista_lineas=[1, 2, 3]):
         mapbox=dict(
             accesstoken=mapbox_token,
             style=mapstyle,
-            center=dict(lat=6.58, lon=74.6),
+            center=dict(lat=6.58, lon=-74.6),
             zoom=8,
         ),
     )
@@ -248,7 +262,7 @@ def get_realtime_figure(lista_lineas=[1, 2, 3]):
     Output("cluster-realtime-graph", "figure"), Input("checklist-linea", "value")
 )
 def update_graph(lista_linea):
-    print("check listtt ", lista_linea)
+    # print("check listtt ", lista_linea)
     figure = get_realtime_figure(lista_linea)
     return figure
 
@@ -271,7 +285,7 @@ def update_graph(num):
         raise PreventUpdate
     else:
         filter_prediction_df = filter_prediction_dict[1]
-        print("ensayooo", filter_prediction_df.head())
+        # print("ensayooo", filter_prediction_df.head())
         df_table = filter_prediction_df.copy()
         formato = Format(
             scheme=Scheme.fixed,

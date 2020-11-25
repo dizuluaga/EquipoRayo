@@ -115,11 +115,12 @@ def filter_outages(power_line_name):
         Input(component_id="power_line_name", component_property="value"),
     ],
 )
-@cache.memoize(timeout=60)
+# @cache.memoize(timeout=60)
 def filter_towers(power_line_name): # change
     table_id = lineas_dict_numbers[power_line_name]
-    tower = towers_dic[table_id]
-    return (tower.to_dict("records"),)
+    towers = pd.read_sql_table(f"tbl_towers_{table_id}", engine)
+    # print("Tower dcc Store",towers.head(1))
+    return (towers.to_dict("records"),)
 
 @app.callback(
     [
