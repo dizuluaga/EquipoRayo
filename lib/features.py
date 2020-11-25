@@ -8,6 +8,7 @@ def convertir_gdf(df, crs='EPSG:4326'):
             df.longitude, df.latitude
         ),crs=crs
     )
+    #! no se asigna
     gdf.to_crs('EPSG:3116')
     return gdf
 

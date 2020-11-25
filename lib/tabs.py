@@ -55,7 +55,8 @@ cards = [
             html.P("True Negatives Rate", className="card-text"),
         ],
         body=True,
-        color="light",
+        color="dark",
+        inverse=True,
     ),
     dbc.Card(
         [
@@ -91,9 +92,9 @@ layout = html.Div(
             value="tab-1",
             children=[
                 dcc.Tab(
-                    label="Clusters",
+                    label="Historical prediction",
                     value="tab-1",
-                    children=[
+                    children=[html.H1("Historical prediction"),
                         html.Hr(),
                         dbc.Row([dbc.Col(card) for card in cards]),
                         html.Label(
@@ -123,7 +124,7 @@ layout = html.Div(
                         ),
                     ],
                 ),
-                dcc.Tab(label="2", value="tab-2"),
+                dcc.Tab(label="Real time prediction", value="tab-2"),
             ],persistence=True,
         ),
         html.Div(
@@ -286,8 +287,6 @@ def updating(power_line_name_model, outage_indicatoes, data_towers, data_cluster
                 group_delimiter='.',
                 decimal_delimiter=',')
     
-    df_clusters.to_excel('df_clustrs.xlsx')
-    df_features.to_excel('df_features.xlsx')
     df_features.index = pd.to_numeric(df_features.index)
     df_features.index.name = 'Cluster'
     df_table = df_features.join(df_clusters.drop_duplicates('cluster').set_index('cluster')[['date_outage']]).dropna()

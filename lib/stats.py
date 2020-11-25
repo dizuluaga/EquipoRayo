@@ -498,7 +498,6 @@ def _update_graph(
                 f"{resampling_time_number}{resampling_time_label}",
                 offset=f"{resampling_time_number}{resampling_time_label}",
             ).agg(resampling_dropdown)
-        df.to_excel("ensayo_buscar.xlsx")
         # print("jol")
         df.dropna(inplace=True)
         # print(df)

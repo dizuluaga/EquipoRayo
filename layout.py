@@ -61,7 +61,7 @@ pathnames_dict = {
 def toggle_active_links(pathname):
     if pathname == "/":
         # Treat page 1 as the homepage / index
-        return False, True, False
+        return False, False, False
     else:
         return [pathname == pathnames_dict.get(f"/page-{i}") for i in range(1, 4)]
 
@@ -75,7 +75,16 @@ def display_page(pathname):
     elif pathname == pathnames_dict["/page-3"]:
         return about_us.layout
     elif pathname == "/":
-        return html.Div(html.H1("Isa Project"), className="ds4a-body")
+        return html.Div(
+            [
+                html.Iframe(
+                    src="https://www.youtube.com/embed/0wLRDjLgoMU?autoplay=0&fs=1&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0",
+                    style={'width':1200,
+                           'height':600}
+                ),
+            ],
+            className="ds4a-body",
+        )
         # TODO
     else:
         return html.Div(

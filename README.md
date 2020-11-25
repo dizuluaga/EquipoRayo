@@ -1,12 +1,10 @@
-# Dashboard for ISA project
+# Final Project - Data Science For All 3.0
 
-## Integrants:
+https://ds4a.aleatoria.co/
+
+# Members:
 * Diana Zuluaga
-* Camilo Gutierrrez
-* Weibmar
-* Edison
-* Julian
-
-conda env export > environment.yml
-
-conda env create --file envname.yml
+* Camilo Gutiérrez
+* Wbeimar Ossa
+* Edison Yepes
+* Julián Arango
