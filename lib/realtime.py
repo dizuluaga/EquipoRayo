@@ -47,32 +47,161 @@ alert = dbc.Alert(
 )
 
 
-cards_alerta = [
-    dbc.Row(
-        dbc.Card(
-            [
-                html.H2(id="card-probability", className="card-title"),
-                html.P("Probability of outage", className="card-text"),
-            ],
-            id="card-block",
-            body=True,
-            color="danger",
-        )
-    ),
-    html.Br(),
-    dbc.Row(
-        dbc.Card(
-            [
-                html.H2(className="card-title", id="hora"),
-                html.P("Time HH:MM:SS", className="card-text"),
-            ],
-            body=True,
-            color="dark",
-            inverse=True,
+cards_alerta = dbc.Row(
+    [
+        dbc.Col(
+            dbc.Card(
+                [
+                    dbc.CardHeader(
+                        html.H5("Comuneros - Primavera"), style={"text-align": "center"}
+                    ),
+                    dbc.CardBody(
+                        [
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        html.Div(
+                                            [
+                                                html.H2(
+                                                    id="card-prob-1",
+                                                    className="card-title",
+                                                ),
+                                                html.P(
+                                                    "Probability of outage",
+                                                    className="card-text",
+                                                ),
+                                            ],
+                                        ),
+                                        style={"text-align": "center"},
+                                    ),
+                                    dbc.Col(
+                                        html.Div(
+                                            [
+                                                html.H2(
+                                                    "11",
+                                                    id="card-cellss",
+                                                    className="card-clusters-1",
+                                                ),
+                                                html.P(
+                                                    "discharge cells",
+                                                    className="card-text",
+                                                ),
+                                            ]
+                                        ),
+                                        style={"text-align": "center"},
+                                    ),
+                                ]
+                            )
+                        ]
+                    ),
+                ],
+                id="card-block",
+            )
         ),
-    ),
-]
-
+        dbc.Col(
+            dbc.Card(
+                [
+                    dbc.CardHeader(
+                        html.H5("Cerramotoso - Primavera"),
+                        style={"text-align": "center"},
+                    ),
+                    dbc.CardBody(
+                        [
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        html.Div(
+                                            [
+                                                html.H2(
+                                                    "50.5%",
+                                                    id="card-probability2",
+                                                    className="card-title",
+                                                ),
+                                                html.P(
+                                                    "Probability of outage",
+                                                    className="card-text",
+                                                ),
+                                            ],
+                                        ),
+                                        style={"text-align": "center"},
+                                    ),
+                                    dbc.Col(
+                                        html.Div(
+                                            [
+                                                html.H2(
+                                                    "7",
+                                                    id="card-clusters-3",
+                                                    className="card-title",
+                                                ),
+                                                html.P(
+                                                    "discharge cells",
+                                                    className="card-text",
+                                                ),
+                                            ]
+                                        ),
+                                        style={"text-align": "center"},
+                                    ),
+                                ]
+                            )
+                        ]
+                    ),
+                ],
+                id="card-block",
+            )
+        ),
+        dbc.Col(
+            dbc.Card(
+                [
+                    dbc.CardHeader(
+                        html.H5("San Carlos - La Virginia"),
+                        style={"text-align": "center"},
+                    ),
+                    dbc.CardBody(
+                        [
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        html.Div(
+                                            [
+                                                html.H2(
+                                                    "4%",
+                                                    id="card-probability-3",
+                                                    className="card-title",
+                                                ),
+                                                html.P(
+                                                    "Probability of outage",
+                                                    className="card-text",
+                                                ),
+                                            ],
+                                        ),
+                                        style={"text-align": "center"},
+                                    ),
+                                    dbc.Col(
+                                        html.Div(
+                                            [
+                                                html.H2(
+                                                    "2",
+                                                    id="card-clusters-3",
+                                                    className="card-title",
+                                                ),
+                                                html.P(
+                                                    "discharge cells",
+                                                    className="card-text",
+                                                ),
+                                            ]
+                                        ),
+                                        style={"text-align": "center"},
+                                    ),
+                                ]
+                            )
+                        ]
+                    ),
+                ],
+                id="card-block",
+            )
+        ),
+    ]
+)
 
 tabla_prediction = dash_table.DataTable(
     id="datatable-prediction",
@@ -131,16 +260,93 @@ layout = dbc.Container(
             # if -1, then the interval has no limit (the default)
             # and if 0 then the interval stops running.
         ),
-        html.H1("Real time prediction"),
-        alert,
         dbc.Row(
             [
-                dbc.Col(dcc.Graph(id="cluster-realtime-graph"), md=8),
-                dbc.Col(html.Div(cards_alerta), md=4),
-            ],
-            align="center",
+                dbc.Col(
+                    html.H1("Real time prediction"),
+                ),
+            ]
         ),
-        tabla_prediction,
+        alert,
+        cards_alerta,
+        html.Br(),
+        html.Div(
+            style={
+                "backgroundColor": "#494a4b",
+                "padding": "6px 0px 6px 8px",
+            },
+            children=[
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            dbc.Badge(
+                                [
+                                    html.H2(className="card-title", id="hora"),
+                                    html.P("Time HH:MM:SS", className="card-text"),
+                                ],
+                                color="dark",
+                                style={"backgroundColor": "#494a4b"},
+                                className="mr-1",
+                            ),
+                        ),
+                        dbc.Col(dbc.ButtonGroup([
+                                dbc.Button(
+                                    "Open map",
+                                    color="light",
+                                    id="map-botton",className='mx-2'
+                                ),
+                                 dbc.Button(
+                                        "Open table",
+                                        color="light",
+                                        id="table-botton",className='mx-2'
+                                    ),],className="vertical-center")
+                        ),
+                    ],
+                    justify="between",
+                ),
+            ],
+        ),
+        html.Br(),
+        dbc.Row(
+            [
+                dbc.Col(
+                    dbc.Collapse(
+                        dcc.Graph(id="cluster-realtime-graph"),
+                        id="map-collapse",
+                        is_open=False,
+                    )
+                ),
+            ]
+        ),
+        dbc.Row(
+            [
+                dbc.Col(
+                    dbc.Collapse(tabla_prediction, id="table-collapse", is_open=False)
+                ),
+            ]
+        ),
     ],
     fluid=True,
 )
+
+
+@app.callback(
+    Output("map-collapse", "is_open"),
+    Input("map-botton", "n_clicks"),
+    State("map-collapse", "is_open"),
+)
+def toggle_left(n_left, is_open):
+    if n_left:
+        return not is_open
+    return is_open
+
+
+@app.callback(
+    Output("table-collapse", "is_open"),
+    Input("table-botton", "n_clicks"),
+    State("table-collapse", "is_open"),
+)
+def toggle_left(n_left, is_open):
+    if n_left:
+        return not is_open
+    return is_open

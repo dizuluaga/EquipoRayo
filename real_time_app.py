@@ -129,70 +129,120 @@ for line in range(1,4):
 end_abs = timer()
 print('Total: {}'.format(end_abs - start_abs))
 
-def get_realtime_figure(df_clusters=discharges_by_cluster_df_temp
-#                        ,towers=towers_df
-#                        ,df_features=filter_prediction_df,
-#                        ):
-#                        df_clusters.cluster = pd.Categorical(df_clusters.cluster)
-#                        map_fig = px.scatter_mapbox(
-#                            df_clusters,
-#                            lat="latitude",
-#                            lon="longitude",
-#                            color="cluster",
-#                            hover_data=["time_delta", "date"],
-#                        )
-#
-#                        map_fig.add_trace(
-#                            go.Scattermapbox(
-#                                lat=towers.latitude,
-#                                lon=towers.longitude,
-#                                mode="markers",  # markers+lines
-#                                marker=go.scattermapbox.Marker(size=7, color="black", opacity=0.7),
-#                                name="Towers",
-#                                hovertemplate="longitude: %{lon:.2f}<br>" + "latitude: %{lat:.2f}<br>",
-#                            )
-#                        )
-#                        lon_x, lon_y, gdf_buffer = buf.buffer_line(10, towers_buffer=towers)
-#                        centro = gdf_buffer.centroid
-#                        x = centro.x.iloc[0]
-#                        y = centro.y.iloc[0]
-#                        map_fig.update_layout(
-#                            margin={"t": 0.2, "l": 0, "b": 10},
-#                            autosize=True,
-#                            height=500,
-#                            hovermode="closest",
-#                            mapbox=dict(
-#                                accesstoken=mapbox_token,
-#                                style=mapstyle,
-#                                center=dict(lat=y, lon=x),
-#                                zoom=8,
-#                            ),
-#                        )
-#                        map_fig["layout"]["uirevision"] = "no reset of zoom"
-#                        return map_fig
+def get_realtime_figure(
+    df_clusters=discharges_by_cluster_df_temp,
+    towers=df_towers,
+    df_features=filter_prediction_df,
+):
+    df_clusters.cluster = pd.Categorical(df_clusters.cluster)
+    map_fig = px.scatter_mapbox(
+        df_clusters,
+        lat="latitude",
+        lon="longitude",
+        color="cluster",
+        hover_data=["time_delta", "date"],
+    )
+
+    map_fig.add_trace(
+        go.Scattermapbox(
+            lat=towers.latitude,
+            lon=towers.longitude,
+            mode="markers",  # markers+lines
+            marker=go.scattermapbox.Marker(size=7, color="black", opacity=0.7),
+            name="Towers",
+            hovertemplate="longitude: %{lon:.2f}<br>" + "latitude: %{lat:.2f}<br>",
+        )
+    )
+    lon_x, lon_y, gdf_buffer = buf.buffer_line(10, towers_buffer=towers)
+    centro = gdf_buffer.centroid
+    x = centro.x.iloc[0]
+    y = centro.y.iloc[0]
+    map_fig.update_layout(
+        margin={"t": 0.2, "l": 0, "b": 10},
+        autosize=True,
+        height=500,
+        hovermode="closest",
+        mapbox=dict(
+            accesstoken=mapbox_token,
+            style=mapstyle,
+            center=dict(lat=y, lon=x),
+            zoom=8,
+        ),
+    )
+    map_fig["layout"]["uirevision"] = "no reset of zoom"
+    return map_fig
 
 
-## print('La figura',get_realtime_figure()
-#figure = get_realtime_figure()
-#
+# print('La figura',get_realtime_figure()
+figure = get_realtime_figure()
 
-#@app.callback(
-#    [
-#        Output("cluster-realtime-graph", "figure"),
-#        Output("hora", "children"),
-#        Output("card-probability", "children"),
-#    ],
-#    [
-#        Input("real-time-interval", "n_intervals"),
-#    ],
-#)
-#def update_graph(num):
-#    # print("""update every 3 seconds""")
-#    if num == 0:
-#        raise PreventUpdate
-#    else:
-#        return (
-#            figure,
-#            dt.now().strftime("%H-%M-%S.%f")[:-4],
-#            "{:.1f}%".format(filter_prediction_df.prediction.max() * 100),
-#        )
+
+@app.callback(
+    [
+        Output("cluster-realtime-graph", "figure"),
+        Output("hora", "children"),
+        Output("card-prob-1", "children"),
+        Output("datatable-prediction", "data"),
+        Output("datatable-prediction", "columns"),
+        Output("datatable-prediction", "style_data_conditional"),
+    ],
+    [
+        Input("real-time-interval", "n_intervals"),
+    ],
+)
+def update_graph(num):
+    # print("""update every 3 seconds""")
+    if num == 0:
+        raise PreventUpdate
+    else:
+        df_table = filter_prediction_df.copy()
+        formato = Format(
+            scheme=Scheme.fixed,
+            precision=2,
+            group=Group.yes,
+            groups=3,
+            group_delimiter=".",
+            decimal_delimiter=",",
+        )
+
+        formato_int = Format(
+            scheme=Scheme.fixed,
+            precision=0,
+            group=Group.yes,
+            groups=3,
+            group_delimiter=".",
+            decimal_delimiter=",",
+        )
+        df_table.index.name = "Cluster"
+        df_table.reset_index(inplace=True)
+        # cols = df_table.columns.drop("date_outage")
+        cols = df_table.columns
+        df_table[cols] = df_table[cols].apply(pd.to_numeric)
+        df_numeric = df_table.select_dtypes(exclude=["object"])
+        df_numeric.sort_values("Cluster", ascending=True, inplace=True)
+        df_numeric.columns = df_numeric.columns.map(lambda x: x.replace("_", " "))
+        cols = [
+            {
+                "name": i,
+                "id": i,
+                "type": "numeric",
+                "format": formato_int if i in ["Cluster", "label", "line"] else formato,
+            }
+            for i in df_numeric.columns
+        ]
+        style_data_conditional = [
+            {
+                "if": {"filter_query": "{label} = 1"},
+                "backgroundColor": "#FF4136",
+                "color": "white",
+                "fontWeight": "bold",
+            },
+        ]
+        return (
+            figure,
+            dt.now().strftime("%H:%M:%S"),
+            "{:.1f}%".format(filter_prediction_df.prediction.max() * 100),
+            df_numeric.to_dict("records"),
+            cols,
+            style_data_conditional,
+        )
