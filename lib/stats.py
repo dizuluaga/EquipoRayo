@@ -371,7 +371,7 @@ def _update_time_range_label(year_range):
         Input("memory-outages", "data"),
     ],
 )
-@cache.memoize(timeout=600)
+# @cache.memoize(timeout=600)
 def _update_graph(
     year_range,
     outage_indicator,
