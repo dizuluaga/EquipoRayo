@@ -77,7 +77,7 @@ card_wbeimar = dbc.Card(
             [
                 html.H5("Wbeimar Ossa Giraldo", className="card-title"),
                 html.P(
-                    "Front End Developer",
+                    "Back End Developer",
                     className="card-text",
                 ),
                 dbc.Button(

@@ -155,10 +155,10 @@ figure = get_realtime_figure()
     [
         Output("cluster-realtime-graph", "figure"),
         Output("hora", "children"),
-        Output("card-probability", "children"),
+        Output("card-prob-1", "children"),
         Output("datatable-prediction", "data"),
         Output("datatable-prediction", "columns"),
-        Output('datatable-prediction', 'style_data_conditional')
+        Output("datatable-prediction", "style_data_conditional"),
     ],
     [
         Input("real-time-interval", "n_intervals"),
@@ -187,7 +187,7 @@ def update_graph(num):
             group_delimiter=".",
             decimal_delimiter=",",
         )
-        df_table.index.name='Cluster'
+        df_table.index.name = "Cluster"
         df_table.reset_index(inplace=True)
         # cols = df_table.columns.drop("date_outage")
         cols = df_table.columns
@@ -214,9 +214,9 @@ def update_graph(num):
         ]
         return (
             figure,
-            dt.now().strftime("%H:%M:%S.%f")[:-4],
+            dt.now().strftime("%H:%M:%S"),
             "{:.1f}%".format(filter_prediction_df.prediction.max() * 100),
             df_numeric.to_dict("records"),
             cols,
-            style_data_conditional
+            style_data_conditional,
         )
