@@ -265,16 +265,6 @@ layout = dbc.Container(
                 dbc.Col(
                     html.H1("Real time prediction"),
                 ),
-                dbc.Col(
-                    # dbc.Badge(
-                    #     [
-                    #         html.H2(className="card-title", id="hora"),
-                    #         html.P("Time HH:MM:SS", className="card-text"),
-                    #     ],
-                    #     color="light",
-                    #     className="mr-1",
-                    # ),
-                ),
             ]
         ),
         alert,
