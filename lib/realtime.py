@@ -287,8 +287,8 @@ layout = dbc.Container(
                                 ],
                                 color="dark",
                                 style={"backgroundColor": "#494a4b"},
-                                className="mr-1",
-                            ),
+                                className="mr-1"
+                            ),width=6
                         ),
                         dbc.Col(
                             dbc.ButtonGroup(
@@ -307,14 +307,13 @@ layout = dbc.Container(
                                     ),
                                 ],
                                 className="vertical-center",
-                            )
+                            ), width={'offset':3, 'size':3}
                         ),
                     ],
                     justify="between",
                 ),
             ],
         ),
-        html.Br(),
         dcc.Dropdown(
             options=[
                 {"label": 'Comuneros - Primavera', "value": 1},
@@ -326,6 +325,7 @@ layout = dbc.Container(
             # labelStyle={"display": "inline-block"},
             id='checklist-linea'
         ),
+        html.Br(),
         dbc.Row(
             [
                 dbc.Col(

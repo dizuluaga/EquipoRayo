@@ -22,6 +22,7 @@ import plotly.graph_objects as go
 from pathlib import Path
 
 import warnings
+
 warnings.filterwarnings("ignore")
 
 # Recall app
@@ -43,6 +44,30 @@ from timeit import default_timer as timer
 
 start_abs = timer()
 
+
+def movecol(df, cols_to_move=[], ref_col="", place="After"):
+    """[summary]
+
+    Args:
+        df ([type]): [description]
+        cols_to_move (list, optional): [description]. Defaults to [].
+        ref_col (str, optional): [description]. Defaults to ''.
+        place (str, optional): [description]. Defaults to 'After'.
+    """
+    cols = df.columns.tolist()
+    if place == "After":
+        seg1 = cols[: list(cols).index(ref_col) + 1]
+        seg2 = cols_to_move
+    if place == "Before":
+        seg1 = cols[: list(cols).index(ref_col)]
+        seg2 = cols_to_move + [ref_col]
+
+    seg1 = [i for i in seg1 if i not in seg2]
+    seg3 = [i for i in cols if i not in seg1 + seg2]
+
+    return df[seg1 + seg2 + seg3]
+
+
 ## INITIALIZATION
 
 towers_1 = di_db.towers_1
@@ -63,7 +88,7 @@ pkl_filename = "SVM_model.pkl"
 towers_dict = {1: di_db.towers_1, 2: di_db.towers_2, 3: di_db.towers_3}
 discharges_by_cluster_dict = {}
 filter_prediction_dict = {}
-mapping = {1:{}, 2:{}, 3:{}}
+mapping = {1: {}, 2: {}, 3: {}}
 
 
 def api():
@@ -110,7 +135,7 @@ def api():
                 discharges_by_cluster_df = st_dbscan_model.discharges_by_cluster(
                     data_array=data_array, labels=labels, discharges_df=discharges_df
                 )
-                
+
                 end = timer()
                 print("clustering line {}: {}".format(line, end - start))
 
@@ -151,13 +176,17 @@ def api():
                 discharges_by_cluster_dict[line] = discharges_by_cluster_df[
                     discharges_by_cluster_df.cluster.isin(clusters_prediction_index)
                 ]
-                
-                for i,cluster_ori in enumerate(clusters_prediction_index):
-                    mapping[line][cluster_ori] = i+1+total_clusters
-                cluster_count = len(clusters_prediction_index)    
+
+                for i, cluster_ori in enumerate(clusters_prediction_index):
+                    mapping[line][cluster_ori] = i + 1 + total_clusters
+                cluster_count = len(clusters_prediction_index)
                 total_clusters += cluster_count
-                discharges_by_cluster_dict[line]['cluster'] = discharges_by_cluster_df.cluster.map(mapping[line])
-                filter_prediction_dict[line]['cluster'] = filter_prediction_df.index.map(mapping[line])
+                discharges_by_cluster_dict[line][
+                    "cluster"
+                ] = discharges_by_cluster_df.cluster.map(mapping[line])
+                filter_prediction_dict[line][
+                    "cluster"
+                ] = filter_prediction_df.index.map(mapping[line])
 
     return discharges_by_cluster_dict, filter_prediction_dict
 
@@ -185,44 +214,26 @@ def get_realtime_figure(lista_lineas=[1, 2, 3]):
         df_clusters = discharges_by_cluster_dict[linea]
         df_clusters.cluster = pd.Categorical(df_clusters.cluster)
 
-        # Grafico las descargas asociadas a cada cluster
-        # map_fig = px.scatter_mapbox(
-        #     df_clusters,
-        #     lat="latitude",
-        #     lon="longitude",
-        #     color="cluster",
-        #     hover_data=["time_delta", "date"],
-        # )
-        # print({linea:len(df_clusters.cluster.unique())})
-        # print({linea:df_clusters.head()})
-        # print({linea:filter_prediction_dict[linea]})
-        # for i in range(len(df_clusters.cluster.unique())):
-        #     map_fig.add_trace(px.scatter_mapbox(
-        #     df_clusters,
-        #     lat="latitude",
-        #     lon="longitude",
-        #     color="cluster",
-        #     hover_data=["time_delta", "date"],
-        #     ).data[i])
         map_fig.add_trace(
             go.Scattermapbox(
                 lat=df_clusters["latitude"],
                 lon=df_clusters["longitude"],
-                marker = go.scattermapbox.Marker(
-                    size=7, color = df_clusters["cluster"], opacity=0.7
+                marker=go.scattermapbox.Marker(
+                    size=7, color=df_clusters["cluster"], opacity=0.7
                 ),
                 legendgroup=str(linea),
-                name = 'Linea_'+str(linea),
+                name="Linea_" + str(linea),
                 customdata=pd.concat(
-                            [   df_clusters.cluster,
-                                df_clusters.date.dt.strftime("%H:%M:%S"),
-                                df_clusters.time_delta,
-                                df_clusters.magnitude,
-                                df_clusters.polarity,
-                                df_clusters.current,
-                            ],
-                            axis=1,
-                        ).values,
+                    [
+                        df_clusters.cluster,
+                        df_clusters.date.dt.strftime("%H:%M:%S"),
+                        df_clusters.time_delta,
+                        df_clusters.magnitude,
+                        df_clusters.polarity,
+                        df_clusters.current,
+                    ],
+                    axis=1,
+                ).values,
                 hovertemplate="<b>Cluster: %{customdata[0]}</b><br><b>Time: %{customdata[1]}</b><br><br>Time delta (min): %{customdata[2]:.1f}</b><br>Magnitude: %{customdata[3]:.1f}</b><br>Polarity: %{customdata[4]:.0f}",
             )
         )
@@ -237,7 +248,7 @@ def get_realtime_figure(lista_lineas=[1, 2, 3]):
                 name="Towers",
                 showlegend=False,
                 hovertemplate="longitude: %{lon:.2f}<br>" + "latitude: %{lat:.2f}<br>",
-                legendgroup=str(linea)
+                legendgroup=str(linea),
             )
         )
     map_fig.update_layout(
@@ -257,24 +268,91 @@ def get_realtime_figure(lista_lineas=[1, 2, 3]):
     return map_fig
 
 
+def get_table(lista_lineas=[1, 2, 3]):
+    tables = []
+    formato = Format(
+        scheme=Scheme.fixed,
+        precision=2,
+        group=Group.yes,
+        groups=3,
+        group_delimiter=".",
+        decimal_delimiter=",",
+    )
+
+    formato_int = Format(
+        scheme=Scheme.fixed,
+        precision=0,
+        group=Group.yes,
+        groups=3,
+        group_delimiter=".",
+        decimal_delimiter=",",
+    )
+    for linea in lista_lineas:
+        filter_prediction_df = filter_prediction_dict[linea]
+        # print("ensayooo", filter_prediction_df.head())
+        df_table = filter_prediction_df.copy()
+
+        df_table.reset_index(drop=True, inplace=True)
+        # cols = df_table.columns.drop("date_outage")
+        cols = df_table.columns
+        df_table[cols] = df_table[cols].apply(pd.to_numeric)
+        df_numeric = df_table.select_dtypes(exclude=["object"])
+        df_numeric.sort_values("cluster", ascending=True, inplace=True)
+        df_numeric.columns = df_numeric.columns.map(lambda x: x.replace("_", " "))
+        df_numeric = movecol(df_numeric, cols_to_move=["cluster", "prediction"], ref_col="storm duration",place='Before')
+        tables.append(df_numeric)
+    cols = [
+        {
+            "name": i,
+            "id": i,
+            "type": "numeric",
+            "format": formato_int if i in ["cluster", "label", "line"] else formato,
+        }
+        for i in df_numeric.columns
+    ]
+    style_data_conditional = [
+        {
+            "if": {"filter_query": "{label} = 1"},
+            "backgroundColor": "#FF4136",
+            "color": "white",
+            "fontWeight": "bold",
+        },
+    ]
+    p_value = "{:.1f}%".format(filter_prediction_df.prediction.max() * 100)
+    df_final = pd.concat(tables, axis=0)
+    # print('columns',df_final_changed.columns)
+    data_tabla = df_final.to_dict("records")
+
+    return (
+        p_value,
+        data_tabla,
+        cols,
+        style_data_conditional,
+    )
+
+
 # print('La figura',get_realtime_figure()
 @app.callback(
-    Output("cluster-realtime-graph", "figure"), Input("checklist-linea", "value")
+    Output("cluster-realtime-graph", "figure"),
+    Output("card-prob-1", "children"),
+    Output("datatable-prediction", "data"),
+    Output("datatable-prediction", "columns"),
+    Output("datatable-prediction", "style_data_conditional"),
+    Input("checklist-linea", "value"),
 )
 def update_graph(lista_linea):
     # print("check listtt ", lista_linea)
     figure = get_realtime_figure(lista_linea)
-    return figure
+    p_value, data_tabla, cols, style_data_conditional = get_table(lista_linea)
+    return figure, p_value, data_tabla, cols, style_data_conditional
 
 
 @app.callback(
-    [
-        Output("hora", "children"),
-        Output("card-prob-1", "children"),
-        Output("datatable-prediction", "data"),
-        Output("datatable-prediction", "columns"),
-        Output("datatable-prediction", "style_data_conditional"),
-    ],
+    Output("hora", "children"),
+    # Output("card-prob-1", "children"),
+    # Output("datatable-prediction", "data"),
+    # Output("datatable-prediction", "columns"),
+    # Output("datatable-prediction", "style_data_conditional"),
     [
         Input("real-time-interval", "n_intervals"),
     ],
@@ -329,10 +407,8 @@ def update_graph(num):
                 "fontWeight": "bold",
             },
         ]
-        return (
-            dt.now().strftime("%H:%M:%S"),
-            "{:.1f}%".format(filter_prediction_df.prediction.max() * 100),
-            df_numeric.to_dict("records"),
-            cols,
-            style_data_conditional,
-        )
+        return dt.now().strftime("%H:%M:%S")
+        # "{:.1f}%".format(filter_prediction_df.prediction.max() * 100),
+        # df_numeric.to_dict("records"),
+        # cols,
+        # style_data_conditional,
