@@ -14,9 +14,6 @@ def data_preparation(discharges_df, current_datetime):
 
     return data_array
 
-
-#data_preparation
-
 # ST-DBSCAN algorithm
 def st_dbscan(eps1, eps2, min_samples, data_array):
 
@@ -41,15 +38,3 @@ def discharges_by_cluster(data_array, labels, discharges_df):
                                                             ,how='inner', left_index=True, right_index=True)
 
     return discharges_by_cluster_df
-
-
-#eps1_km = 10 # spatial distance of 10 km
-#eps2 = 10 # temporal distance of 10 min
-#min_samples = 5 # min number of dicharges in cluster nuclei
-
-#km_per_radian = 6371.0088
-#eps1 = eps1_km / km_per_radian
- 
-#data_array = data_preparation(discharges_df, working_datetime)
-#labels = st_dbscan(eps1=eps1, eps2=eps2, min_samples=min_samples, data_array=data_array)
-#discharges_by_cluster_df = discharges_by_cluster(data_array=data_array, labels=labels, discharges_df=discharges_df)
