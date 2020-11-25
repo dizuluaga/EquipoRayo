@@ -97,7 +97,7 @@ card_edison = dbc.Card(
         dbc.CardImg(src="/assets/edison.jpeg", top=True),
         dbc.CardBody(
             [
-                html.H5("Edison Yepes", className="card-title"),
+                html.H5("Edison Yepes Sánchez", className="card-title"),
                 html.P(
                     "Back End Developer",
                     className="card-text",
