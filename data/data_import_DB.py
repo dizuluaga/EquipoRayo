@@ -104,7 +104,7 @@ def get_discharges(date_first="2018-04-05", num_days=1, table_id=1):
         Input(component_id="power_line_name", component_property="value"),
     ],
 )
-@cache.memoize(timeout=60)
+@cache.memoize(timeout=100)
 def filter_outages(power_line_name):
     table_id = lineas_dict_numbers[power_line_name]
     outages = pd.read_sql_table(f"tbl_outages_{table_id}", engine)
@@ -119,7 +119,7 @@ def filter_outages(power_line_name):
         Input(component_id="power_line_name", component_property="value"),
     ],
 )
-# @cache.memoize(timeout=60)
+@cache.memoize(timeout=100)
 def filter_towers(power_line_name):  # change
     table_id = lineas_dict_numbers[power_line_name]
     towers = pd.read_sql_table(f"tbl_towers_{table_id}", engine)
