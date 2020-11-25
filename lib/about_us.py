@@ -55,7 +55,7 @@ card_julian = dbc.Card(
             [
                 html.H5("Julián Arango Ochoa", className="card-title"),
                 html.P(
-                    "Front End Developer",
+                    "Investigator",
                     className="card-text",
                 ),
                 dbc.Button(
@@ -77,7 +77,7 @@ card_wbeimar = dbc.Card(
             [
                 html.H5("Wbeimar Ossa Giraldo", className="card-title"),
                 html.P(
-                    "Back End Developer",
+                    "Investigator",
                     className="card-text",
                 ),
                 dbc.Button(

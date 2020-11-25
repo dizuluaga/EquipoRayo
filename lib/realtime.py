@@ -33,7 +33,7 @@ alert = dbc.Alert(
     [
         html.H4("WARNING: Failure alert!", className="alert-heading"),
         html.P(
-            "It is likely that in the next 5 minutes there will be a failure in the Comuneros-Primavera power line."
+            "It is likely that in the next 5 minutes there will be a failure in the <b>Comuneros-Primavera</b> & Cerromatoso - Primavera power line."
         ),
         html.Hr(),
         html.P(
@@ -63,7 +63,7 @@ cards_alerta = dbc.Row(
                                     dbc.Col(
                                         html.Div(
                                             [
-                                                html.H2(
+                                                html.H2("38.9%",
                                                     id="card-prob-1",
                                                     className="card-title",
                                                 ),
@@ -79,7 +79,7 @@ cards_alerta = dbc.Row(
                                         html.Div(
                                             [
                                                 html.H2(
-                                                    "11",
+                                                    "2",
                                                     id="card-cellss",
                                                     className="card-clusters-1",
                                                 ),
@@ -103,7 +103,7 @@ cards_alerta = dbc.Row(
             dbc.Card(
                 [
                     dbc.CardHeader(
-                        html.H5("Cerramotoso - Primavera"),
+                        html.H5("Cerromatoso - Primavera"),
                         style={"text-align": "center"},
                     ),
                     dbc.CardBody(
@@ -114,7 +114,7 @@ cards_alerta = dbc.Row(
                                         html.Div(
                                             [
                                                 html.H2(
-                                                    "50.5%",
+                                                    "38.9%",
                                                     id="card-probability2",
                                                     className="card-title",
                                                 ),
@@ -130,8 +130,8 @@ cards_alerta = dbc.Row(
                                         html.Div(
                                             [
                                                 html.H2(
-                                                    "7",
-                                                    id="card-clusters-3",
+                                                    "2",
+                                                    id="card-clusters-2",
                                                     className="card-title",
                                                 ),
                                                 html.P(
@@ -165,7 +165,7 @@ cards_alerta = dbc.Row(
                                         html.Div(
                                             [
                                                 html.H2(
-                                                    "4%",
+                                                    "--",
                                                     id="card-probability-3",
                                                     className="card-title",
                                                 ),
@@ -181,7 +181,7 @@ cards_alerta = dbc.Row(
                                         html.Div(
                                             [
                                                 html.H2(
-                                                    "2",
+                                                    "--",
                                                     id="card-clusters-3",
                                                     className="card-title",
                                                 ),

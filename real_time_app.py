@@ -299,6 +299,7 @@ def get_table(lista_lineas=[1, 2, 3]):
         df_numeric = df_table.select_dtypes(exclude=["object"])
         df_numeric.sort_values("cluster", ascending=True, inplace=True)
         df_numeric.columns = df_numeric.columns.map(lambda x: x.replace("_", " "))
+        df_numeric.prediction = df_numeric.prediction*100
         df_numeric = movecol(df_numeric, cols_to_move=["cluster", "prediction"], ref_col="storm duration",place='Before')
         tables.append(df_numeric)
     cols = [
