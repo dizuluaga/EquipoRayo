@@ -15,7 +15,8 @@ import plotly.graph_objects as go
 
 # Recall app
 import data.data_import_DB_L2
-from real_time_app import discharges_by_cluster_df
+import real_time_app
+# from real_time_app import discharges_by_cluster_df
 
 from app import app
 from dash.dependencies import ClientsideFunction, Input, Output, State
@@ -253,7 +254,7 @@ layout = dbc.Container(
         dcc.Interval(
             id="real-time-interval",
             disabled=False,  # if True, the counter will no longer update
-            interval=1
+            interval=30
             * 1000,  # increment the counter n_intervals every interval milliseconds
             # n_intervals=0,  # number of times the interval has passed
             # max_intervals=4,  # number of times the interval will be fired.
@@ -289,17 +290,24 @@ layout = dbc.Container(
                                 className="mr-1",
                             ),
                         ),
-                        dbc.Col(dbc.ButtonGroup([
-                                dbc.Button(
-                                    "Open map",
-                                    color="light",
-                                    id="map-botton",className='mx-2'
-                                ),
-                                 dbc.Button(
+                        dbc.Col(
+                            dbc.ButtonGroup(
+                                [
+                                    dbc.Button(
+                                        "Open map",
+                                        color="light",
+                                        id="map-botton",
+                                        className="mx-2",
+                                    ),
+                                    dbc.Button(
                                         "Open table",
                                         color="light",
-                                        id="table-botton",className='mx-2'
-                                    ),],className="vertical-center")
+                                        id="table-botton",
+                                        className="mx-2",
+                                    ),
+                                ],
+                                className="vertical-center",
+                            )
                         ),
                     ],
                     justify="between",
@@ -307,6 +315,17 @@ layout = dbc.Container(
             ],
         ),
         html.Br(),
+        dcc.Dropdown(
+            options=[
+                {"label": 'Comuneros - Primavera', "value": 1},
+                {"label": 'Cerromatoso - Primavera', "value": 2},
+                {"label": 'La Virginia - San Carlos', "value": 3},
+            ],
+            value=[1],
+            multi=True,
+            # labelStyle={"display": "inline-block"},
+            id='checklist-linea'
+        ),
         dbc.Row(
             [
                 dbc.Col(
@@ -337,6 +356,7 @@ layout = dbc.Container(
 )
 def toggle_left(n_left, is_open):
     if n_left:
+        print('toogle map', not is_open)
         return not is_open
     return is_open
 
@@ -348,5 +368,6 @@ def toggle_left(n_left, is_open):
 )
 def toggle_left(n_left, is_open):
     if n_left:
+        print('toogle table', not is_open)
         return not is_open
     return is_open

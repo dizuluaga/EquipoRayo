@@ -143,6 +143,7 @@ def filter_outages(power_line_name):
 )
 @cache.memoize()
 def filter_discharges(power_line_name, outage_indicator, data_outages):
+    print('Se caga aca?')
     outages = pd.DataFrame.from_dict(data_outages)
     table_id = lineas_dict_numbers[power_line_name]
     # outages = pd.read_sql_table(f"tbl_outages_{table_id}", engine)
