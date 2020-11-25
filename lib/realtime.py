@@ -33,7 +33,7 @@ alert = dbc.Alert(
     [
         html.H4("WARNING: Failure alert!", className="alert-heading"),
         html.P(
-            "It is likely that in the next 5 minutes there will be a failure in the <b>Comuneros-Primavera</b> & Cerromatoso - Primavera power line."
+            "It is likely that in the next 5 minutes there will be a failure in the Comuneros-Primavera & Cerromatoso - Primavera power line."
         ),
         html.Hr(),
         html.P(
@@ -332,7 +332,7 @@ layout = dbc.Container(
                     dbc.Collapse(
                         dcc.Graph(id="cluster-realtime-graph",config={"displayModeBar": False},),
                         id="map-collapse",
-                        is_open=False,
+                        is_open=True,
                     )
                 ),
             ]
@@ -340,7 +340,7 @@ layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(
-                    dbc.Collapse(tabla_prediction, id="table-collapse", is_open=False)
+                    dbc.Collapse(tabla_prediction, id="table-collapse",is_open=True)
                 ),
             ]
         ),

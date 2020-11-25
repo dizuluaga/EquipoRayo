@@ -9,6 +9,7 @@ import json
 from lib import buffer
 import os
 from datetime import datetime as dt
+from datetime import timedelta
 from dash_table.Format import Format, Group, Scheme, Symbol
 import dash
 import dash_bootstrap_components as dbc
@@ -335,7 +336,6 @@ def get_table(lista_lineas=[1, 2, 3]):
 # print('La figura',get_realtime_figure()
 @app.callback(
     Output("cluster-realtime-graph", "figure"),
-    Output("card-prob-1", "children"),
     Output("datatable-prediction", "data"),
     Output("datatable-prediction", "columns"),
     Output("datatable-prediction", "style_data_conditional"),
@@ -345,7 +345,7 @@ def update_graph(lista_linea):
     # print("check listtt ", lista_linea)
     figure = get_realtime_figure(lista_linea)
     p_value, data_tabla, cols, style_data_conditional = get_table(lista_linea)
-    return figure, p_value, data_tabla, cols, style_data_conditional
+    return figure, data_tabla, cols, style_data_conditional
 
 
 @app.callback(
@@ -408,7 +408,7 @@ def update_graph(num):
                 "fontWeight": "bold",
             },
         ]
-        return dt.now().strftime("%H:%M:%S")
+        return (dt.now()-timedelta(hours=5)).strftime("%H:%M:%S")
         # "{:.1f}%".format(filter_prediction_df.prediction.max() * 100),
         # df_numeric.to_dict("records"),
         # cols,
