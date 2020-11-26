@@ -44,6 +44,7 @@ alert = dbc.Alert(
     dismissable=True,
     id="alerta-message",
     is_open=True,
+    duration=5000,
     color="danger",
 )
 
