@@ -64,7 +64,7 @@ cards_alerta = dbc.Row(
                                     dbc.Col(
                                         html.Div(
                                             [
-                                                html.H2("38.9%",
+                                                html.H2("39.6%",
                                                     id="card-prob-1",
                                                     className="card-title",
                                                 ),
