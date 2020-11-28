@@ -33,7 +33,7 @@ alert = dbc.Alert(
     [
         html.H4("WARNING: Failure alert!", className="alert-heading"),
         html.P(
-            "It is likely that in the next 5 minutes there will be a failure in the Comuneros-Primavera & Cerromatoso - Primavera power line."
+            "It is likely that in the next 5 minutes there will be a failure in the Comuneros-Primavera power line."
         ),
         html.Hr(),
         html.P(
