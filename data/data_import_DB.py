@@ -32,14 +32,21 @@ cache = Cache(
     },
 )
 
-
 credenciales = dict(
     POSTGRES_DB="db_isa",
     POSTGRES_USER="postgres",
-    POSTGRES_PASSWORD="ninguna.123",
-    POSTGRES_HOST="extended-case-4.crccn2eby4ve.us-east-2.rds.amazonaws.com",
+    POSTGRES_PASSWORD="locuras*hagalepapito",
+    POSTGRES_HOST="157.230.190.145",
     POSTGRES_PORT=5432,
 )
+
+# credenciales = dict(
+#     POSTGRES_DB="db_isa",
+#     POSTGRES_USER="postgres",
+#     POSTGRES_PASSWORD="ninguna.123",
+#     POSTGRES_HOST="extended-case-4.crccn2eby4ve.us-east-2.rds.amazonaws.com",
+#     POSTGRES_PORT=5432,
+# )
 
 # Database information from env variables
 DATABASES = {

@@ -23,6 +23,17 @@ from app import app
 # Add the DS4A_Img
 ####################################################################################
 
+simte_Img = html.Div(
+    children=[
+        html.Img(
+            src=app.get_asset_url("logo-simte.png"),
+            id="simt-image",
+            style={"width": "85%"},
+        )
+    ], style={'textAlign': 'center'}
+)
+
+
 DS4A_Img = html.Div(
     children=[
         html.Img(
@@ -69,14 +80,15 @@ date_picker = dcc.DatePickerRange(
 #############################################################################
 # Sidebar Layout
 #############################################################################
-sidebar = html.Div(
-    [
-        DS4A_Img,  # Add the DS4A_Img located in the assets folder
-        html.Hr(),  # Add an horizontal line
+sidebar = html.Div([
+    # [
+    #     DS4A_Img,  # Add the DS4A_Img located in the assets folder
+    #     html.H4("Team 4",style={'textAlign': 'center'}),
+        # html.Hr(),  # Add an horizontal line
         ####################################################
         # Place the rest of Layout here
         ####################################################
-        html.H4("Team 4"),
+        simte_Img,
         html.Hr(),
         # dcc.Link(html.Button('back'), href='www.google.com'),
         dbc.Nav(
@@ -116,6 +128,8 @@ sidebar = html.Div(
         ),
         html.Hr(),
         ISA_Img,
+        html.Hr(),
+        DS4A_Img,
         MINTIC_Img,
     ],
     className="ds4a-sidebar",
