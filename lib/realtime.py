@@ -80,12 +80,12 @@ cards_alerta = dbc.Row(
                                         html.Div(
                                             [
                                                 html.H2(
-                                                    "2",
+                                                    "7",
                                                     id="card-cellss",
                                                     className="card-clusters-1",
                                                 ),
                                                 html.P(
-                                                    "discharge cells",
+                                                    "storm cells",
                                                     className="card-text",
                                                 ),
                                             ]
@@ -115,7 +115,7 @@ cards_alerta = dbc.Row(
                                         html.Div(
                                             [
                                                 html.H2(
-                                                    "38.9%",
+                                                    "2.6%",
                                                     id="card-probability2",
                                                     className="card-title",
                                                 ),
@@ -136,7 +136,7 @@ cards_alerta = dbc.Row(
                                                     className="card-title",
                                                 ),
                                                 html.P(
-                                                    "discharge cells",
+                                                    "storm cells",
                                                     className="card-text",
                                                 ),
                                             ]
@@ -187,7 +187,7 @@ cards_alerta = dbc.Row(
                                                     className="card-title",
                                                 ),
                                                 html.P(
-                                                    "discharge cells",
+                                                    "storm cells",
                                                     className="card-text",
                                                 ),
                                             ]
