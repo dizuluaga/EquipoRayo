@@ -100,7 +100,7 @@ def display_page(pathname):
             className="ds4a-graphs",
         )
 
-
+# RUN!!!
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         app.run_server(host="0.0.0.0", debug=False) if (
