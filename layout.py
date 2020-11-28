@@ -75,14 +75,14 @@ def display_page(pathname):
     elif pathname == pathnames_dict["/page-3"]:
         return about_us.layout
     elif pathname == "/":
-        return html.Div(
+        return html.Div(dbc.Row(
             [
                 html.Iframe(
                     src="https://www.youtube.com/embed/0wLRDjLgoMU?autoplay=0&fs=1&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0",
                     style={'width':1200,
                            'height':600}
                 ),
-            ],
+            ]),
             className="ds4a-body",
         )
         # TODO

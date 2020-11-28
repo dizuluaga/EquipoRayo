@@ -3,6 +3,7 @@ import dash_html_components as html
 
 # Recall app
 import app
+ancho_card = "18rem"
 
 card_camilo = dbc.Card(
     [
@@ -23,7 +24,7 @@ card_camilo = dbc.Card(
             ]
         ),
     ],
-    style={"width": "18rem", "textAlign": "center"},
+    style={"width": ancho_card, "textAlign": "center"},
 )
 
 card_diana = dbc.Card(
@@ -45,7 +46,7 @@ card_diana = dbc.Card(
             ]
         ),
     ],
-    style={"width": "18rem", "textAlign": "center"},
+    style={"width": ancho_card, "textAlign": "center"},
 )
 
 card_julian = dbc.Card(
@@ -55,7 +56,7 @@ card_julian = dbc.Card(
             [
                 html.H5("Julián Arango Ochoa", className="card-title"),
                 html.P(
-                    "Investigator",
+                    "Researcher",
                     className="card-text",
                 ),
                 dbc.Button(
@@ -67,7 +68,7 @@ card_julian = dbc.Card(
             ]
         ),
     ],
-    style={"width": "18rem", "textAlign": "center"},
+    style={"width": ancho_card, "textAlign": "center"},
 )
 
 card_wbeimar = dbc.Card(
@@ -77,7 +78,7 @@ card_wbeimar = dbc.Card(
             [
                 html.H5("Wbeimar Ossa Giraldo", className="card-title"),
                 html.P(
-                    "Investigator",
+                    "Researcher",
                     className="card-text",
                 ),
                 dbc.Button(
@@ -89,7 +90,7 @@ card_wbeimar = dbc.Card(
             ]
         ),
     ],
-    style={"width": "18rem", "textAlign": "center"},
+    style={"width": ancho_card, "textAlign": "center"},
 )
 
 card_edison = dbc.Card(
@@ -111,7 +112,7 @@ card_edison = dbc.Card(
             ]
         ),
     ],
-    style={"width": "18rem", "textAlign": "center"},
+    style={"width": ancho_card, "textAlign": "center"},
 )
 
 layout = html.Div(
